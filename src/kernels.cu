@@ -43,13 +43,6 @@ int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
    auto alcSize = size * sizeof(int) * 1024 * 1024;
    int st;//cudaError_t st;
 
-   // Choose which GPU to run on, change this on a multi-GPU system.
-   st = cudaSetDevice(0);
-   if (st != cudaSuccess) {
-      fprintf(stderr, "cudaSetDevice failed!  Do you have a CUDA-capable GPU installed?");
-      goto Error;
-   }
-
    // Allocate GPU buffers for three vectors (two input, one output)    .
    st = cudaMalloc((void**)&dev_c, alcSize) 
       + cudaMalloc((void**)&dev_a, alcSize) 
@@ -65,13 +58,8 @@ int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
    }
 
    // Copy input vectors from host memory to GPU buffers.
-   st = cudaMemcpy(dev_a, a, size * sizeof(int), cudaMemcpyHostToDevice);
-   if (st != cudaSuccess) {
-      fprintf(stderr, "cudaMemcpy failed!");
-      goto Error;
-   }
-
-   st = cudaMemcpy(dev_b, b, size * sizeof(int), cudaMemcpyHostToDevice);
+   st = cudaMemcpy(dev_a, a, size * sizeof(int), cudaMemcpyHostToDevice)
+      + cudaMemcpy(dev_b, b, size * sizeof(int), cudaMemcpyHostToDevice);
    if (st != cudaSuccess) {
       fprintf(stderr, "cudaMemcpy failed!");
       goto Error;
@@ -90,10 +78,10 @@ int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
       goto Error;
    }
 
-   st = cudaMemGetInfo(&freeMem, &totalMem);
-   if (st == cudaSuccess) {
-      printf("    after kernels: %.2f MB\n", freeMem / (1024.0 * 1024.0));
-   }
+   //st = cudaMemGetInfo(&freeMem, &totalMem);
+   //if (st == cudaSuccess) {
+   //   printf("    after kernels: %.2f MB\n", freeMem / (1024.0 * 1024.0));
+   //}
 
    // cudaDeviceSynchronize waits for the kernel to finish, and returns
    // any errors encountered during the launch.
@@ -135,6 +123,7 @@ int getCudaCoresPerSM(int major, int minor) {
 
 bool DetectCUDA()
 {
+   // Any GPUs?
    int deviceCount;
    cudaGetDeviceCount(&deviceCount);
    printf("Available GPUs: %d\n", deviceCount);
@@ -142,23 +131,24 @@ bool DetectCUDA()
       return false;
    }
 
-   for (int i = 0; i < deviceCount; ++i) {
-      cudaDeviceProp deviceProp;
-      cudaGetDeviceProperties(&deviceProp, i);
-      printf("Device %d: %s\n", i, deviceProp.name);
+   // Can we choose one? 
+   auto st = cudaSetDevice(0);// idx is available later via cudaGetDevice()
+   if (st != cudaSuccess) {
+      fprintf(stderr, "cudaSetDevice failed! Do you have a CUDA-capable GPU installed?");
+      return false;
    }
 
-   {
-      int device;
-      cudaGetDevice(&device);
-
+   // list some props
+   float perMeg  = 1.f / (1024.f * 1024.f);
+   float perKilo = 1.f / (1024.f);
+   for (int i = 0; i < deviceCount; ++i) {
       cudaDeviceProp prop;
-      cudaGetDeviceProperties(&prop, device);
+      cudaGetDeviceProperties(&prop, i);
 
       int coresPerSM = getCudaCoresPerSM(prop.major, prop.minor);
       int totalCores = prop.multiProcessorCount * coresPerSM;
 
-      printf("GPU name: %s\n", prop.name);
+      printf("Device %d: %s\n", i, prop.name);
       printf("Streaming Multiprocessors (SM): %d\n", prop.multiProcessorCount);
       if (totalCores > 0) {
          printf("CUDA Cores per SM: %d\n", coresPerSM);
@@ -166,6 +156,9 @@ bool DetectCUDA()
       } else {
          printf("CUDA Cores per SM is not recognized: version %d.%d\n", prop.major, prop.minor);
       }
+      printf("Memory global / shared : %.2f MB / %.2f KB\n", 
+            prop.totalGlobalMem    * perMeg,           /** Global memory available on device in bytes */
+            prop.sharedMemPerBlock * perKilo);         /** Shared memory available per block in bytes */
    }
 
    size_t freeMem, totalMem;
@@ -176,8 +169,8 @@ bool DetectCUDA()
          return false;
       }
 
-      printf("GPU memory total : %.2f MB\n", totalMem / (1024.0 * 1024.0));
-      printf("       available : %.2f MB\n", freeMem / (1024.0 * 1024.0));
+      printf("GPU memory total : %.2f MB\n", totalMem * perMeg);
+      printf("       available : %.2f MB\n", freeMem  * perMeg);
    }
 
    return true;
