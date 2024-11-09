@@ -1,12 +1,11 @@
 ﻿#include <stdio.h>
 
+// redundant -- to make intellisense work
 #ifndef __CUDACC__
 #define __CUDACC__
 #endif
 
 #ifdef __CUDACC__
-// Code that should only be compiled when CUDA is available
-
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -33,13 +32,6 @@ __global__ void IncKernelFunc(int *c)
    int i = threadIdx.x;
    c[i]++;
 }
-
-//extern void IncInCPP(int* dest);
-//__global__ void IncExtKernel(int *c)
-//{
-//   int i = threadIdx.x;
-//   IncInCPP(c + i); // cannot call __host__
-//}
 
 // using CUDA to add vectors in parallel.
 int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
@@ -69,7 +61,7 @@ int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
 
    st = cudaMemGetInfo(&freeMem, &totalMem);
    if (st == cudaSuccess) {
-      printf(" after allocs    : %.2f MB\n", freeMem / (1024.0 * 1024.0));
+      printf("    after allocs : %.2f MB\n", freeMem / (1024.0 * 1024.0));
    }
 
    // Copy input vectors from host memory to GPU buffers.
@@ -100,7 +92,7 @@ int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
 
    st = cudaMemGetInfo(&freeMem, &totalMem);
    if (st == cudaSuccess) {
-      printf(" after kernels   : %.2f MB\n", freeMem / (1024.0 * 1024.0));
+      printf("    after kernels: %.2f MB\n", freeMem / (1024.0 * 1024.0));
    }
 
    // cudaDeviceSynchronize waits for the kernel to finish, and returns
@@ -113,7 +105,7 @@ int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
 
    st = cudaMemGetInfo(&freeMem, &totalMem);
    if (st == cudaSuccess) {
-      printf(" after sync      : %.2f MB\n", freeMem / (1024.0 * 1024.0));
+      printf("    after sync   : %.2f MB\n", freeMem / (1024.0 * 1024.0));
    }
 
    // Copy output vector from GPU buffer to host memory.
@@ -131,8 +123,51 @@ Error:
    return st;
 }
 
-bool CudaWork(int* c, const int* a, const int* b, unsigned int size)
+// Helper function for calculating core numbers based on version
+int getCudaCoresPerSM(int major, int minor) {
+   if (major == 8 && minor == 6) return 128; // Ampere (RTX 30xx)
+   if (major == 8 && minor == 0) return 64;  // Ampere (A100)
+   if (major == 7 && minor == 5) return 64;  // Turing (T4)
+   if (major == 7 && minor == 0) return 64;  // Volta  (V100)
+   if (major == 6 && minor == 1) return 128; // Pascal (P100)
+   return -1; // unknonw
+}
+
+bool DetectCUDA()
 {
+   int deviceCount;
+   cudaGetDeviceCount(&deviceCount);
+   printf("Available GPUs: %d\n", deviceCount);
+   if (!deviceCount) {
+      return false;
+   }
+
+   for (int i = 0; i < deviceCount; ++i) {
+      cudaDeviceProp deviceProp;
+      cudaGetDeviceProperties(&deviceProp, i);
+      printf("Device %d: %s\n", i, deviceProp.name);
+   }
+
+   {
+      int device;
+      cudaGetDevice(&device);
+
+      cudaDeviceProp prop;
+      cudaGetDeviceProperties(&prop, device);
+
+      int coresPerSM = getCudaCoresPerSM(prop.major, prop.minor);
+      int totalCores = prop.multiProcessorCount * coresPerSM;
+
+      printf("GPU name: %s\n", prop.name);
+      printf("Streaming Multiprocessors (SM): %d\n", prop.multiProcessorCount);
+      if (totalCores > 0) {
+         printf("CUDA Cores per SM: %d\n", coresPerSM);
+         printf("Total CUDA Cores : %d\n", totalCores);
+      } else {
+         printf("CUDA Cores per SM is not recognized: version %d.%d\n", prop.major, prop.minor);
+      }
+   }
+
    size_t freeMem, totalMem;
    {
       cudaError_t status = cudaMemGetInfo(&freeMem, &totalMem);
@@ -144,6 +179,13 @@ bool CudaWork(int* c, const int* a, const int* b, unsigned int size)
       printf("GPU memory total : %.2f MB\n", totalMem / (1024.0 * 1024.0));
       printf("       available : %.2f MB\n", freeMem / (1024.0 * 1024.0));
    }
+
+   return true;
+}
+
+bool CudaWork(int* c, const int* a, const int* b, unsigned int size)
+{
+   DetectCUDA();
 
    // Add vectors in parallel.
    auto st = addWithCuda(c, a, b, size);
@@ -166,21 +208,26 @@ bool CudaClose()
    }
 
    // final stat
-   printf("CUDA device is closed. ");
+   printf("CUDA reset the device; ");
    size_t freeMem, totalMem;
    st = cudaMemGetInfo(&freeMem, &totalMem);
    if (st == cudaSuccess) {
-      printf("Memory on exit : %.2f MB\n", freeMem / (1024.0 * 1024.0));
+      printf("memory after reset : %.2f MB\n", freeMem / (1024.0 * 1024.0));
    }
 
    return true;
 }
 
-#else
-// Code stubs, compiled when CUDA is not available
+#else // Code stubs, compiled when CUDA is not available
+
+bool DetectCUDA()
+{
+   fprintf(stderr, "CUDA didn't even compile. Surely it's unavailable on this platform.\nIt's very sad to work without CUDA.\n");
+   return false;
+}
+
 bool CudaWork(int* c, const int* a, const int* b, unsigned int size)
 {
-   fprintf(stderr, "CUDA is not available on this platform.\nIt's very sad to work without CUDA.\n");
    return false;
 }
 
@@ -188,5 +235,6 @@ bool CudaClose()
 {
    return true;
 }
+
 #endif
 

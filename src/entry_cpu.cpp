@@ -6,9 +6,15 @@ extern bool CudaClose();
 extern void DoSelfTests();
 #define PLATFORM_GETCH _getch
 
-int main()
+void WaitKey()
 {
-   const int arraySize = 5;
+   printf("{Any key}\n");
+   PLATFORM_GETCH();
+}
+
+void main()
+{
+   const int arraySize = 20;
    const int a[arraySize] = { 1, 2, 3, 4, 5 };
    const int b[arraySize] = { 10, 20, 30, 40, 50 };
    int c[arraySize] = { 0 };
@@ -19,10 +25,10 @@ int main()
    }
 
    CudaClose();
+   WaitKey();
 
-   //DoSelfTests();
-   PLATFORM_GETCH();
+   DoSelfTests();
+   WaitKey();
 
-   return 0;
 }
 

@@ -7,6 +7,8 @@
 #include "../dds-develop/include/dll.h"
 #include "../dds-develop/examples/hands.h"
 
+void WaitKey();
+
 void IncInCPP(int* dest)
 {
    (*dest)++;
@@ -235,6 +237,7 @@ void sample_main_SolveBoard()
       PrintFut(line, &fut3);
       sprintf(line, "solutions == 2 leads %s, trumps: %s\n",  haPlayerToStr(dl.first), haTrumpToStr(dl.trump) );
       PrintFut(line, &fut2);
+      WaitKey();
    }
 
    printf("\n=======================================\nThe testing ended with: %s\n",
