@@ -128,6 +128,18 @@ Error:
 
 bool CudaWork(int* c, const int* a, const int* b, unsigned int size)
 {
+   size_t freeMem, totalMem;
+   {
+      cudaError_t status = cudaMemGetInfo(&freeMem, &totalMem);
+      if (status != cudaSuccess) {
+         printf("Error: %s\n", cudaGetErrorString(status));
+         return false;
+      }
+
+      printf("Total memory on GPU: %.2f MB\n", totalMem / (1024.0 * 1024.0));
+      printf("Free memory available for cudaMalloc: %.2f MB\n", freeMem / (1024.0 * 1024.0));
+   }
+
    // Add vectors in parallel.
    cudaError_t cudaStatus = addWithCuda(c, a, b, size);
    if (cudaStatus != cudaSuccess) {

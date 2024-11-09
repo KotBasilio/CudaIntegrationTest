@@ -5,10 +5,36 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\selftest.cpp" />
+    <ClCompile Include="dds-develop\examples\hands.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
+    <ClCompile Include="dds-develop\src\Memory.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="src">
+    <Filter Include="dds">
       <UniqueIdentifier>{209f9279-d35c-4fd4-a984-490f521e4f38}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dds-develop\include\dll.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\examples\hands.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\Memory.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\TransTable.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\TransTableL.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\TransTableS.h">
+      <Filter>dds</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
