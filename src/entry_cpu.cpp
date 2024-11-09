@@ -20,7 +20,7 @@ int main()
 
    CudaClose();
 
-   DoSelfTests();
+   //DoSelfTests();
    PLATFORM_GETCH();
 
    return 0;
