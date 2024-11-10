@@ -5,7 +5,25 @@
 #define __CUDACC__
 #endif
 
-#ifdef __CUDACC__
+#ifndef __CUDACC__
+
+bool DetectCUDA()
+{
+   fprintf(stderr, "CUDA didn't even compile. Surely it's unavailable on this platform.\nIt's very sad to work without CUDA.\n");
+   return false;
+}
+
+bool CudaWork(int* c, const int* a, const int* b, unsigned int size)
+{
+   return false;
+}
+
+bool CudaClose()
+{
+   return true;
+}
+
+#else // Code stubs, compiled when CUDA is not available
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -33,129 +51,36 @@ __global__ void addOtherKernel(int *c, const int *a, const int *b)
    c[i] += a[i]/2 + 10;
 }
 
-__constant__ float constantArray[20];
+__constant__ int constantArray[20];
 
-__global__ void WithConstKernel(int *c, const int *a, const int *b)
+__global__ void kerWithConstMem(int *c, const int *a, const int *b)
 {
    int i = threadIdx.x;
    SumParts(c+i, a+i, b+i);
    c[i] += a[i]/2 + constantArray[i];
 }
 
-bool CopyBuffersToDev(int* c, const int* a, const int* b, 
-   int *&dev_a,   int *&dev_b,   int *&dev_c, unsigned int size)
+__global__ void kerFillMapped(float *mapped, float *map2)
 {
-   size_t freeMem, totalMem;
-   auto alcSize = size * sizeof(int) * 1024 * 1024;
-   int st;
+   int thrID = threadIdx.x;
+   mapped[thrID] = thrID * 1.f;
+   map2[thrID] = 10.f + thrID;
+}
 
-   // Allocate GPU buffers for three vectors (two input, one output)    .
-   st = cudaMalloc((void**)&dev_c, alcSize) 
-      + cudaMalloc((void**)&dev_a, alcSize) 
-      + cudaMalloc((void**)&dev_b, alcSize);
-   if (st != cudaSuccess) {
-      fprintf(stderr, "cudaMalloc failed!");
-      return false;
-   }
+// --------------------------------------------------------------
+// host part
 
-   st = cudaMemGetInfo(&freeMem, &totalMem);
+size_t freeMem, totalMem;
+
+void ShowMemStat(const char *title)
+{
+   auto st = cudaMemGetInfo(&freeMem, &totalMem);
    if (st == cudaSuccess) {
-      printf("    after allocs : %.2f MB\n", freeMem / (1024.0 * 1024.0));
+      printf("    %s: %.2f MB\n", title, freeMem / (1024.0 * 1024.0));
    }
-
-   // Copy input vectors from host memory to GPU buffers.
-   st = cudaMemcpy(dev_a, a, size * sizeof(int), cudaMemcpyHostToDevice)
-      + cudaMemcpy(dev_b, b, size * sizeof(int), cudaMemcpyHostToDevice);
-   if (st != cudaSuccess) {
-      fprintf(stderr, "cudaMemcpy failed!");
-      return false;
-   }
-
-   return true;
 }
 
-bool FillConstantMem()
-{
-   // fill
-   float host_arr[20];
-   for (int i = 0; i < 20; i++) {
-      host_arr[i] = 10;
-   }
-
-   // pass to device
-   auto st = cudaMemcpyToSymbol(constantArray, host_arr, sizeof(host_arr));
-   if (st != cudaSuccess) {
-      fprintf(stderr, "FillConstantMem failed!");
-      return false;
-   }
-
-   return true;
-}
-
-// using CUDA to add vectors in parallel.
-int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
-{
-   size_t freeMem, totalMem;
-   int *dev_a = 0;
-   int *dev_b = 0;
-   int *dev_c = 0;
-   int st;//cudaError_t st;
-
-   if (!CopyBuffersToDev(c, a, b, dev_a, dev_b, dev_c, size)) {
-      goto Error;
-   }
-
-   if (!FillConstantMem()) {
-      goto Error;
-   }
-
-   // Launch some kernel on the GPU with one thread for each element.
-   //addKernel<<<1, size>>>(dev_c, dev_a, dev_b);
-   //addOtherKernel<<<1, size>>>(dev_c, dev_a, dev_b);
-   //IncKernelFunc<<<1, size>>>(dev_c);
-   WithConstKernel<<<1, size>>>(dev_c, dev_a, dev_b);
-
-   // Check for any errors launching the kernel
-   st = cudaGetLastError();
-   if (st != cudaSuccess) {
-      fprintf(stderr, "addKernel launch failed: %s\n", cudaGetErrorString((cudaError_t)st));
-      goto Error;
-   }
-
-   //st = cudaMemGetInfo(&freeMem, &totalMem);
-   //if (st == cudaSuccess) {
-   //   printf("    after kernels: %.2f MB\n", freeMem / (1024.0 * 1024.0));
-   //}
-
-   // cudaDeviceSynchronize waits for the kernel to finish, and returns
-   // any errors encountered during the launch.
-   st = cudaDeviceSynchronize();
-   if (st != cudaSuccess) {
-      fprintf(stderr, "cudaDeviceSynchronize returned error code %d after launching addKernel!\n", st);
-      goto Error;
-   }
-
-   st = cudaMemGetInfo(&freeMem, &totalMem);
-   if (st == cudaSuccess) {
-      printf("    after sync   : %.2f MB\n", freeMem / (1024.0 * 1024.0));
-   }
-
-   // Copy output vector from GPU buffer to host memory.
-   st = cudaMemcpy(c, dev_c, size * sizeof(int), cudaMemcpyDeviceToHost);
-   if (st != cudaSuccess) {
-      fprintf(stderr, "cudaMemcpy failed!");
-      goto Error;
-   }
-
-Error:
-   cudaFree(dev_c);
-   cudaFree(dev_a);
-   cudaFree(dev_b);
-    
-   return st;
-}
-
-// Helper function for calculating core numbers based on version
+// Calc core numbers based on version
 int getCudaCoresPerSM(int major, int minor) {
    if (major == 8 && minor == 6) return 128; // Ampere (RTX 30xx)
    if (major == 8 && minor == 0) return 64;  // Ampere (A100)
@@ -208,7 +133,6 @@ bool DetectCUDA()
       printf("Map Host Memory  : %s\n", (prop.canMapHostMemory) ? "supported" : "missing");
    }
 
-   size_t freeMem, totalMem;
    {
       cudaError_t status = cudaMemGetInfo(&freeMem, &totalMem);
       if (status != cudaSuccess) {
@@ -223,18 +147,141 @@ bool DetectCUDA()
    return true;
 }
 
-bool CudaWork(int* c, const int* a, const int* b, unsigned int size)
+bool CopyBuffersToDev(int* c, const int* a, const int* b, 
+   int *&dev_a,   int *&dev_b,   int *&dev_c, unsigned int size)
 {
-   DetectCUDA();
+   auto alcSize = size * sizeof(int) * 1024 * 1024;
+   int st;
 
-   // Add vectors in parallel.
-   auto st = addWithCuda(c, a, b, size);
-   if (st) {
-      fprintf(stderr, "addWithCuda failed!");
+   // Allocate GPU buffers for three vectors (two input, one output)    .
+   st = cudaMalloc((void**)&dev_c, alcSize) 
+      + cudaMalloc((void**)&dev_a, alcSize) 
+      + cudaMalloc((void**)&dev_b, alcSize);
+   if (st != cudaSuccess) {
+      fprintf(stderr, "cudaMalloc failed!");
+      return false;
+   }
+
+   ShowMemStat("after allocs ");
+
+   // Copy input vectors from host memory to GPU buffers.
+   st = cudaMemcpy(dev_a, a, size * sizeof(int), cudaMemcpyHostToDevice)
+      + cudaMemcpy(dev_b, b, size * sizeof(int), cudaMemcpyHostToDevice);
+   if (st != cudaSuccess) {
+      fprintf(stderr, "cudaMemcpy failed!");
       return false;
    }
 
    return true;
+}
+
+bool FillConstantMem()
+{
+   // fill
+   int host_arr[20];
+   for (int i = 0; i < 20; i++) {
+      host_arr[i] = 10*(i+1);
+   }
+
+   // pass to device
+   auto st = cudaMemcpyToSymbol(constantArray, host_arr, sizeof(host_arr));
+   if (st != cudaSuccess) {
+      fprintf(stderr, "FillConstantMem failed!");
+      return false;
+   }
+
+   ShowMemStat("after const  ");
+
+   return true;
+}
+
+float* hostArrMapped = nullptr, *host2ndMapped = nullptr;
+float* devArrMapped = nullptr, *devSecondMapped = nullptr;
+
+void MapSomeMemory()
+{
+   size_t size = 6  * 1024 * 1024 * sizeof(float);
+   cudaHostAlloc((void**)&hostArrMapped, size, cudaHostAllocMapped);
+   cudaHostGetDevicePointer((void**)&devArrMapped, hostArrMapped, 0);
+
+   for (auto i = 0; i < 200; i++) {
+      hostArrMapped[i] = 888;
+   }
+
+   ShowMemStat("after map-1  ");
+
+   cudaHostAlloc((void**)&host2ndMapped, size, cudaHostAllocMapped);
+   cudaHostGetDevicePointer((void**)&devSecondMapped, host2ndMapped, 0);
+
+   ShowMemStat("after map-2  ");
+
+   // Now we have:
+   // -- hostArrMapped here and 
+   // -- devArrMapped there on the device memory
+   // For example, launch kernel using devArrMapped
+}
+
+int PokeCudaAPI(int *c, const int *a, const int *b, unsigned int size)
+{
+   int *dev_a = nullptr;
+   int *dev_b = nullptr;
+   int *dev_c = nullptr;
+   int st = cudaSuccess;// cudaError_t
+
+   if (!FillConstantMem()) {
+      goto CleanUp;
+   }
+
+   if (!CopyBuffersToDev(c, a, b, dev_a, dev_b, dev_c, size)) {
+      goto CleanUp;
+   }
+
+   // Add vectors in parallel.
+   //    Launch a kernel on the GPU with one thread for each element.
+   //addKernel<<<1, size>>>(dev_c, dev_a, dev_b);
+   //addOtherKernel<<<1, size>>>(dev_c, dev_a, dev_b);
+   //IncKernelFunc<<<1, size>>>(dev_c);
+   kerWithConstMem<<<1, size>>>(dev_c, dev_a, dev_b);
+   if (cudaGetLastError() != cudaSuccess) {
+      fprintf(stderr, "addKernel launch failed: %s\n", cudaGetErrorString(cudaGetLastError()));
+      goto CleanUp;
+   }
+
+   // Fill mapped memory -- one thread for each element.
+   kerFillMapped<<<1, size>>>(devArrMapped, devSecondMapped);
+   if (cudaGetLastError() != cudaSuccess) {
+      fprintf(stderr, "addKernel launch failed: %s\n", cudaGetErrorString(cudaGetLastError()));
+      goto CleanUp;
+   }
+                           
+   // <<<<<<<<<<<< MAIN SYNC >>>>>>>>>>>>>>>>
+   //    cudaDeviceSynchronize waits for the kernel to finish, and returns
+   //    any errors encountered during the launch.
+   st = cudaDeviceSynchronize();
+   if (st != cudaSuccess) {
+      fprintf(stderr, "cudaDeviceSynchronize returned error code %d after launching addKernel!\n", st);
+      goto CleanUp;
+   }
+
+   ShowMemStat("after sync   ");
+
+   // Copy output vector from GPU buffer to host memory.
+   st = cudaMemcpy(c, dev_c, size * sizeof(int), cudaMemcpyDeviceToHost);
+   if (st != cudaSuccess) {
+      fprintf(stderr, "cudaMemcpy failed!");
+      goto CleanUp;
+   }
+
+CleanUp:
+   cudaFree(dev_c);
+   cudaFree(dev_a);
+   cudaFree(dev_b);
+   cudaFreeHost(hostArrMapped);
+   cudaFreeHost(host2ndMapped);
+    
+   ShowMemStat("after free   ");
+
+   return st;
 }
 
 bool CudaClose()
@@ -249,7 +296,6 @@ bool CudaClose()
 
    // final stat
    printf("CUDA reset the device; ");
-   size_t freeMem, totalMem;
    st = cudaMemGetInfo(&freeMem, &totalMem);
    if (st == cudaSuccess) {
       printf("memory after reset : %.2f MB\n", freeMem / (1024.0 * 1024.0));
@@ -258,23 +304,21 @@ bool CudaClose()
    return true;
 }
 
-#else // Code stubs, compiled when CUDA is not available
-
-bool DetectCUDA()
-{
-   fprintf(stderr, "CUDA didn't even compile. Surely it's unavailable on this platform.\nIt's very sad to work without CUDA.\n");
-   return false;
-}
-
 bool CudaWork(int* c, const int* a, const int* b, unsigned int size)
 {
-   return false;
-}
+   DetectCUDA();
 
-bool CudaClose()
-{
+   MapSomeMemory();
+
+   // Add vectors in parallel.
+   auto st = PokeCudaAPI(c, a, b, size);
+   if (st) {
+      fprintf(stderr, "PokeCudaAPI failed!");
+      return false;
+   }
+
    return true;
 }
 
-#endif
+#endif // cudacc
 

@@ -3,6 +3,7 @@
 
 extern bool CudaWork(int *c, const int *a, const int *b, unsigned int size);
 extern bool CudaClose();
+void ShowMemStat();
 extern void DoSelfTests();
 #define PLATFORM_GETCH _getch
 
@@ -19,10 +20,10 @@ void TestCudaWays()
    const int b[arraySize] = { 100, 200, 300, 400, 500 };
    int c[arraySize] = { 0 };
    const int check[arraySize] = { 
-      111,213,314,416,517,
-      10, 10, 10, 10, 10,
-      10, 10, 10, 10, 10,
-      10, 10, 10, 10, 10
+      111,223,334,446,557,
+      60, 70, 80, 90, 100,
+      110, 120, 130, 140, 150,
+      160, 170, 180, 190, 200
    };
 
    if (!CudaWork(c, a, b, arraySize)) {
@@ -33,7 +34,7 @@ void TestCudaWays()
    printf("{100,200,300,400,500} +\n");
    printf("{  1,  2,  3,  4,  5} +\n");
    printf("{  1,  2,  3,  4,  5} / 2 +\n");
-   printf("{ 10, 10, 10, 10, 10} =\n");
+   printf("{ 10, 20, 30, 40, 50} const =\n");
    printf("{%d,%d,%d,%d,%d}\n", c[0], c[1], c[2], c[3], c[4]);
    printf("======================= ");
 
