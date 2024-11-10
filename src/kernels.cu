@@ -15,6 +15,12 @@ __global__ void addKernel(int *c, const int *a, const int *b)
     c[i] = a[i] + b[i];
 }
 
+__global__ void IncKernelFunc(int *c)
+{
+   int i = threadIdx.x;
+   c[i]++;
+}
+
 __host__ __device__ void SumParts(int* c, const int* a, const int* b)
 {
    *c = *a + *b;
@@ -24,24 +30,24 @@ __global__ void addOtherKernel(int *c, const int *a, const int *b)
 {
    int i = threadIdx.x;
    SumParts(c+i, a+i, b+i);
-   c[i] += a[i] - 1;
+   c[i] += a[i]/2 + 10;
 }
 
-__global__ void IncKernelFunc(int *c)
+__constant__ float constantArray[20];
+
+__global__ void WithConstKernel(int *c, const int *a, const int *b)
 {
    int i = threadIdx.x;
-   c[i]++;
+   SumParts(c+i, a+i, b+i);
+   c[i] += a[i]/2 + constantArray[i];
 }
 
-// using CUDA to add vectors in parallel.
-int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
+bool CopyBuffersToDev(int* c, const int* a, const int* b, 
+   int *&dev_a,   int *&dev_b,   int *&dev_c, unsigned int size)
 {
    size_t freeMem, totalMem;
-   int *dev_a = 0;
-   int *dev_b = 0;
-   int *dev_c = 0;
    auto alcSize = size * sizeof(int) * 1024 * 1024;
-   int st;//cudaError_t st;
+   int st;
 
    // Allocate GPU buffers for three vectors (two input, one output)    .
    st = cudaMalloc((void**)&dev_c, alcSize) 
@@ -49,7 +55,7 @@ int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
       + cudaMalloc((void**)&dev_b, alcSize);
    if (st != cudaSuccess) {
       fprintf(stderr, "cudaMalloc failed!");
-      goto Error;
+      return false;
    }
 
    st = cudaMemGetInfo(&freeMem, &totalMem);
@@ -62,14 +68,52 @@ int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
       + cudaMemcpy(dev_b, b, size * sizeof(int), cudaMemcpyHostToDevice);
    if (st != cudaSuccess) {
       fprintf(stderr, "cudaMemcpy failed!");
+      return false;
+   }
+
+   return true;
+}
+
+bool FillConstantMem()
+{
+   // fill
+   float host_arr[20];
+   for (int i = 0; i < 20; i++) {
+      host_arr[i] = 10;
+   }
+
+   // pass to device
+   auto st = cudaMemcpyToSymbol(constantArray, host_arr, sizeof(host_arr));
+   if (st != cudaSuccess) {
+      fprintf(stderr, "FillConstantMem failed!");
+      return false;
+   }
+
+   return true;
+}
+
+// using CUDA to add vectors in parallel.
+int addWithCuda(int *c, const int *a, const int *b, unsigned int size)
+{
+   size_t freeMem, totalMem;
+   int *dev_a = 0;
+   int *dev_b = 0;
+   int *dev_c = 0;
+   int st;//cudaError_t st;
+
+   if (!CopyBuffersToDev(c, a, b, dev_a, dev_b, dev_c, size)) {
       goto Error;
    }
 
-   // Launch a kernel on the GPU with one thread for each element.
+   if (!FillConstantMem()) {
+      goto Error;
+   }
+
+   // Launch some kernel on the GPU with one thread for each element.
    //addKernel<<<1, size>>>(dev_c, dev_a, dev_b);
-   addOtherKernel<<<1, size>>>(dev_c, dev_a, dev_b);
+   //addOtherKernel<<<1, size>>>(dev_c, dev_a, dev_b);
    //IncKernelFunc<<<1, size>>>(dev_c);
-   //IncExtKernel<<<1, size>>>(dev_c);
+   WithConstKernel<<<1, size>>>(dev_c, dev_a, dev_b);
 
    // Check for any errors launching the kernel
    st = cudaGetLastError();
@@ -151,14 +195,17 @@ bool DetectCUDA()
       printf("Device %d: %s\n", i, prop.name);
       printf("Streaming Multiprocessors (SM): %d\n", prop.multiProcessorCount);
       if (totalCores > 0) {
-         printf("CUDA Cores per SM: %d\n", coresPerSM);
-         printf("Total CUDA Cores : %d\n", totalCores);
+         printf("CUDA Cores per SM  : %d\n", coresPerSM);
+         printf("Total CUDA Cores   : %d\n", totalCores);
+         printf("Async Engines      : %d\n", prop.asyncEngineCount);
       } else {
          printf("CUDA Cores per SM is not recognized: version %d.%d\n", prop.major, prop.minor);
       }
-      printf("Memory global / shared : %.2f MB / %.2f KB\n", 
-            prop.totalGlobalMem    * perMeg,           /** Global memory available on device in bytes */
-            prop.sharedMemPerBlock * perKilo);         /** Shared memory available per block in bytes */
+      printf("Memory global / shared / totalConstMem: %.2f MB / %.2f KB / %.2f KB\n", 
+         prop.totalGlobalMem    * perMeg,     // Global memory available on device in bytes 
+         prop.sharedMemPerBlock * perKilo,    // Shared memory available per block in bytes 
+         prop.totalConstMem     * perKilo);   // Constant memory available on device in bytes
+      printf("Map Host Memory  : %s\n", (prop.canMapHostMemory) ? "supported" : "missing");
    }
 
    size_t freeMem, totalMem;

@@ -9,6 +9,8 @@
 
 void WaitKey();
 
+void TestCudaWays();
+
 void IncInCPP(int* dest)
 {
    (*dest)++;
@@ -174,6 +176,29 @@ void PrintFut(char title[], futureTricks * fut)
 #define DDS_HAND_OFFSET 12
 #define DDS_HAND_LINES 12
 
+// ret: HCP on NS line
+uint CalcNSLineHCP(const deal& dl, uint& ctrl)
+{
+   // requires Walrus types
+   ctrl = 9;
+   return 25;
+
+   //const auto &cards = dl.remainCards;
+   //u64 facecards (RA | RK | RQ | RJ);
+   //SplitBits reducedHand (
+   //   (((cards[SOUTH][SOL_SPADES  ] | cards[NORTH][SOL_SPADES  ]) & facecards) << (1 + 16*3)) |
+   //   (((cards[SOUTH][SOL_HEARTS  ] | cards[NORTH][SOL_HEARTS  ]) & facecards) << (1 + 16*2)) |
+   //   (((cards[SOUTH][SOL_DIAMONDS] | cards[NORTH][SOL_DIAMONDS]) & facecards) << (1 + 16*1)) |
+   //   (((cards[SOUTH][SOL_CLUBS   ] | cards[NORTH][SOL_CLUBS   ]) & facecards) << (1))
+   //);
+
+   //twlControls controls(reducedHand);
+   //ctrl = controls.total;
+
+   //twlHCP hcp(reducedHand);
+   //return hcp.total;
+}
+
 static void qaPrintHand(char title[], const deal& dl)
 {
    int c, h, s, r;
@@ -225,9 +250,9 @@ static void qaPrintHand(char title[], const deal& dl)
    }
 
    // print HCP and controls
-   //uint ctrl;
-   //sprintf(text[DDS_STATS_LINE] + DDS_STATS_OFFSET, "HCP : %d", CalcNSLineHCP(dl, ctrl));
-   //sprintf(text[DDS_STATS_LINE + 1] + DDS_STATS_OFFSET, "CTRL: %d", ctrl);
+   uint ctrl;
+   sprintf(text[DDS_STATS_LINE] + DDS_STATS_OFFSET, "HCP : %d", CalcNSLineHCP(dl, ctrl));
+   sprintf(text[DDS_STATS_LINE + 1] + DDS_STATS_OFFSET, "CTRL: %d", ctrl);
 
    // start with title and underline it
    printf("%s", title);
