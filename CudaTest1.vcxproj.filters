@@ -11,6 +11,13 @@
     <ClCompile Include="dds-develop\src\Memory.cpp">
       <Filter>dds</Filter>
     </ClCompile>
+    <ClCompile Include="src\entry_cpu.cpp" />
+    <ClCompile Include="dds-develop\src\TransTableL.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
+    <ClCompile Include="dds-develop\src\TransTableS.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dds">
@@ -34,6 +41,9 @@
       <Filter>dds</Filter>
     </ClInclude>
     <ClInclude Include="dds-develop\src\TransTableS.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\dds.h">
       <Filter>dds</Filter>
     </ClInclude>
   </ItemGroup>

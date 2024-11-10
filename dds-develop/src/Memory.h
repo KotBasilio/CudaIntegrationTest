@@ -10,9 +10,6 @@
 #ifndef DDS_MEMORY_H
 #define DDS_MEMORY_H
 
-#include <vector>
-#include <string>
-
 #include "TransTable.h"
 #include "TransTableS.h"
 #include "TransTableL.h"

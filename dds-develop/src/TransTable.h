@@ -16,8 +16,17 @@
 #ifndef DDS_TRANSTABLE_H
 #define DDS_TRANSTABLE_H
 
+#include <vector>
+#include <string>
+
 using namespace std;
 
+#define DDS_SUITS 4
+#define DDS_HANDS 4
+#define DDS_STRAINS 5
+
+#define SIMILARDEALLIMIT 5
+#define SIMILARMAXWINNODES 700000
 
 enum TTresetReason
 {
@@ -133,6 +142,14 @@ class TransTable
 
     virtual void PrintResetStats(ofstream& fout) const {};
 };
+
+
+// http://stackoverflow.com/a/4030983/211160
+// Use to indicate a variable is being intentionally not referred to (which
+// usually generates a compiler warning)
+#ifndef UNUSED
+  #define UNUSED(x) ((void)(true ? 0 : ((x), void(), 0)))
+#endif
 
 #ifdef _MSC_VER
   #pragma warning(pop)

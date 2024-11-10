@@ -7,6 +7,7 @@
    See LICENSE and README.
 */
 
+#pragma once
 #ifndef DDS_TRANSTABLEL_H
 #define DDS_TRANSTABLEL_H
 

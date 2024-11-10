@@ -6,7 +6,7 @@
 #endif
 
 #ifndef __CUDACC__
-
+// Code stubs, compiled when CUDA is not available
 bool DetectCUDA()
 {
    fprintf(stderr, "CUDA didn't even compile. Surely it's unavailable on this platform.\nIt's very sad to work without CUDA.\n");
@@ -23,7 +23,7 @@ bool CudaClose()
    return true;
 }
 
-#else // Code stubs, compiled when CUDA is not available
+#else
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
@@ -295,11 +295,7 @@ bool CudaClose()
    }
 
    // final stat
-   printf("CUDA reset the device; ");
-   st = cudaMemGetInfo(&freeMem, &totalMem);
-   if (st == cudaSuccess) {
-      printf("memory after reset : %.2f MB\n", freeMem / (1024.0 * 1024.0));
-   }
+   ShowMemStat("device reset ");
 
    return true;
 }

@@ -60,13 +60,13 @@ void Memory::Resize(
       memory[i] = new ThreadData();
       if (flag == DDS_TT_SMALL)
       {
-         // @_@ memory[i]->transTable = new TransTableS;
-        threadSizes[i] = "S";
+         memory[i]->transTable = new TransTableS;
+         threadSizes[i] = "S";
       }
       else
       {
-         // @_@ memory[i]->transTable = new TransTableL;
-        threadSizes[i] = "L";
+         memory[i]->transTable = new TransTableL;
+         threadSizes[i] = "L";
       }
 
       memory[i]->transTable->SetMemoryDefault(memDefault_MB);
