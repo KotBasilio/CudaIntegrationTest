@@ -105,3 +105,20 @@ string Memory::ThreadSize(const unsigned thrId) const
   return threadSizes[thrId];
 }
 
+// ------------------------------------- from Init.cpp
+int lho[DDS_HANDS] = { 1, 2, 3, 0 };
+int rho[DDS_HANDS] = { 3, 0, 1, 2 };
+int partner[DDS_HANDS] = { 2, 3, 0, 1 };
+
+// There is no particular reason for the different types here,
+// other than historical ones. They could all be char's for
+// memory reasons, or all be int's for performance reasons.
+
+int highestRank[8192];
+int lowestRank[8192];
+int counttable[8192];
+char relRank[8192][15];
+unsigned short int winRanks[8192][14];
+
+moveGroupType groupData[8192];
+

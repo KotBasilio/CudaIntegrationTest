@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClCompile Include="dds-develop\examples\hands.cpp" />
     <ClCompile Include="dds-develop\src\Memory.cpp" />
+    <ClCompile Include="dds-develop\src\Moves.cpp" />
     <ClCompile Include="dds-develop\src\TransTableL.cpp" />
     <ClCompile Include="dds-develop\src\TransTableS.cpp" />
     <ClCompile Include="src\entry_cpu.cpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="dds-develop\include\dll.h" />
     <ClInclude Include="dds-develop\src\dds.h" />
     <ClInclude Include="dds-develop\src\Memory.h" />
+    <ClInclude Include="dds-develop\src\Moves.h" />
     <ClInclude Include="dds-develop\src\TransTable.h" />
     <ClInclude Include="dds-develop\src\TransTableL.h" />
     <ClInclude Include="dds-develop\src\TransTableS.h" />

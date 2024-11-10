@@ -18,6 +18,9 @@
     <ClCompile Include="dds-develop\src\TransTableS.cpp">
       <Filter>dds</Filter>
     </ClCompile>
+    <ClCompile Include="dds-develop\src\Moves.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dds">
@@ -44,6 +47,9 @@
       <Filter>dds</Filter>
     </ClInclude>
     <ClInclude Include="dds-develop\src\dds.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\Moves.h">
       <Filter>dds</Filter>
     </ClInclude>
   </ItemGroup>

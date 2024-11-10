@@ -13,8 +13,7 @@
 #include "TransTable.h"
 #include "TransTableS.h"
 #include "TransTableL.h"
-//@_@
-//#include "Moves.h"
+#include "Moves.h"
 //#include "File.h"
 //#include "debug.h"
 
@@ -41,18 +40,6 @@ struct WinnersType
   WinnerEntryType winner[4];
 };
 
-struct absRankType // 2 bytes
-{
-   char rank;
-   signed char hand;
-};
-
-struct relRanksType // 120 bytes
-{
-   absRankType absRank[15][DDS_SUITS];
-};
-
-
 struct ThreadData
 {
   int nodeTypeStore[DDS_HANDS];
@@ -62,14 +49,13 @@ struct ThreadData
   unsigned short int suit[DDS_HANDS][DDS_SUITS];
   int trump;
 
-  // @_@
-  //pos lookAheadPos; // Recursive alpha-beta data
+  pos lookAheadPos; // Recursive alpha-beta data
   bool analysisFlag;
   unsigned short int lowestWin[50][DDS_SUITS];
   WinnersType winners[13];
-  //moveType forbiddenMoves[14];
-  //moveType bestMove[50];
-  //moveType bestMoveTT[50];
+  moveType forbiddenMoves[14];
+  moveType bestMove[50];
+  moveType bestMoveTT[50];
 
   double memUsed;
   int nodes;
@@ -81,7 +67,7 @@ struct ThreadData
 
   TransTable * transTable;
 
-  //Moves moves;
+  Moves moves;
 };
 
 
