@@ -269,6 +269,7 @@ static void qaPrintHand(char title[], const deal& dl)
    //printf("\n\n");
 }
 
+void InitConstants();
 
 void sample_main_SolveBoard()
 {
@@ -276,7 +277,7 @@ void sample_main_SolveBoard()
    bool isAllright = true;
 
    //SetMaxThreads(0);
-   //InitConstants();
+   InitConstants();
 
    deal dl;
    futureTricks fut2, // solutions == 2
