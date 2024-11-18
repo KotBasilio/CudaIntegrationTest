@@ -11,17 +11,72 @@
 #include "../include/dll.h"
 #include "Memory.h"
 
+#define DDS_SYSTEM_THREAD_BASIC 0
+#define DDS_SYSTEM_THREAD_SIZE 1
 
-Memory::Memory()
+class System
 {
-}
+private:
 
+   RunMode runCat; // SOLVE / CALC / PLAY
 
+   int numThreads;
+   int sysMem_MB;
+   int thrDef_MB;
+   int thrMax_MB;
+
+   unsigned preferredSystem;
+
+   vector<bool> availableSystem;
+
+public:
+   System() { Reset(); }
+   ~System() {}
+
+   void Reset();
+
+   int RegisterParams(const int nThreads, const int mem_usable_MB)
+   {
+      // No upper limit -- caveat emptor.
+      if (nThreads < 1)
+         return RETURN_THREAD_INDEX;
+
+      numThreads = nThreads;
+      sysMem_MB = mem_usable_MB;
+      return RETURN_NO_FAULT;
+   }
+
+   int RegisterRun(
+      const RunMode r,
+      const boards& bop);
+
+   bool IsSingleThreaded() const;
+
+   bool IsIMPL() const;
+
+   bool ThreadOK(const int thrId) const;
+
+   void GetHardware(
+      int& ncores,
+      unsigned long long& kilobytesFree) const;
+
+   int PreferThreading(const unsigned code);
+
+   int RunThreads();
+
+   string str(DDSInfo * info) const;
+};
+
+System sysdep;
+Memory memory;
+//Scheduler scheduler;
+//ThreadMgr threadMgr;
+
+Memory::Memory() {}
 Memory::~Memory()
 {
   Memory::Resize(0, DDS_TT_SMALL, 0, 0);
 }
-
 
 void Memory::ReturnThread(const unsigned thrId)
 {
@@ -284,3 +339,65 @@ void InitConstants()
    }
 }
 
+void System::Reset()
+{
+   runCat = DDS_RUN_SOLVE;
+   numThreads = 1;
+
+   preferredSystem = DDS_SYSTEM_THREAD_BASIC;
+   availableSystem.resize(DDS_SYSTEM_THREAD_SIZE);
+   availableSystem[DDS_SYSTEM_THREAD_BASIC] = true;
+
+   //RunPtrList.resize(DDS_SYSTEM_THREAD_SIZE);
+   //RunPtrList[DDS_SYSTEM_THREAD_BASIC] = &System::RunThreadsBasic; 
+
+   //CallbackSimpleList.resize(DDS_RUN_SIZE);
+   //CallbackSimpleList[DDS_RUN_SOLVE] = SolveChunkCommon;
+   //CallbackSimpleList[DDS_RUN_CALC] = CalcChunkCommon;
+   //CallbackSimpleList[DDS_RUN_TRACE] = PlayChunkCommon;
+
+   //CallbackDuplList.resize(DDS_RUN_SIZE);
+   //CallbackDuplList[DDS_RUN_SOLVE] = DetectSolveDuplicates;
+   //CallbackDuplList[DDS_RUN_CALC] = DetectCalcDuplicates;
+   //CallbackDuplList[DDS_RUN_TRACE] = DetectPlayDuplicates;
+
+   //CallbackSingleList.resize(DDS_RUN_SIZE);
+   //CallbackSingleList[DDS_RUN_SOLVE] = SolveSingleCommon;
+   //CallbackSingleList[DDS_RUN_CALC] = CalcSingleCommon;
+   //CallbackSingleList[DDS_RUN_TRACE] = PlaySingleCommon;
+
+   //CallbackCopyList.resize(DDS_RUN_SIZE);
+   //CallbackCopyList[DDS_RUN_SOLVE] = CopySolveSingle;
+   //CallbackCopyList[DDS_RUN_CALC] = CopyCalcSingle;
+   //CallbackCopyList[DDS_RUN_TRACE] = CopyPlaySingle;
+}
+
+
+void SetResources()
+{
+   int maxMemoryMB = 0, maxThreadsIn = 0;
+   int thrMax = 12;
+
+   // We have enough memory for the maximum number of large threads.
+   int noOfThreads, noOfLargeThreads, noOfSmallThreads;
+   noOfThreads = thrMax;
+   noOfLargeThreads = thrMax;
+   noOfSmallThreads = 0;
+
+   int memMaxMB = 11387;
+   sysdep.RegisterParams(noOfThreads, memMaxMB);
+   //scheduler.RegisterThreads(noOfThreads);
+
+   // Clear the thread memory and fill it up again.
+   memory.Resize(0, DDS_TT_SMALL, 0, 0);
+   memory.Resize(static_cast<unsigned>(noOfLargeThreads),
+      DDS_TT_LARGE, THREADMEM_LARGE_DEF_MB, THREADMEM_LARGE_MAX_MB);
+
+   //threadMgr.Reset(noOfThreads);
+
+   InitConstants();
+
+   //runCat	DDS_RUN_SOLVE (0)	RunMode
+   //   numThreads	12	int
+   //   sysMem_MB	11387	int
+}

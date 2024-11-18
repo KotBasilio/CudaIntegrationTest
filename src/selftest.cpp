@@ -269,15 +269,14 @@ static void qaPrintHand(char title[], const deal& dl)
    //printf("\n\n");
 }
 
-void InitConstants();
+void SetResources();
 
 void sample_main_SolveBoard()
 {
    printf("Testing SolveBoard()\n");
    bool isAllright = true;
 
-   //SetMaxThreads(0);
-   InitConstants();
+   SetResources();
 
    deal dl;
    futureTricks fut2, // solutions == 2
