@@ -95,7 +95,6 @@
     <ClCompile Include="dds-develop\src\ThreadMgr.cpp" />
     <ClCompile Include="dds-develop\src\TimerList.cpp" />
     <ClCompile Include="dds-develop\src\TransTableL.cpp" />
-    <ClCompile Include="dds-develop\src\TransTableS.cpp" />
     <ClCompile Include="src\entry_cpu.cpp" />
     <ClCompile Include="src\selftest.cpp" />
   </ItemGroup>
@@ -118,7 +117,6 @@
     <ClInclude Include="dds-develop\src\TimerList.h" />
     <ClInclude Include="dds-develop\src\TransTable.h" />
     <ClInclude Include="dds-develop\src\TransTableL.h" />
-    <ClInclude Include="dds-develop\src\TransTableS.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

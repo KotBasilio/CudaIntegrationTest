@@ -11,7 +11,6 @@
 #define DDS_MEMORY_H
 
 #include "TransTable.h"
-#include "TransTableS.h"
 #include "TransTableL.h"
 #include "Moves.h"
 //#include "File.h"

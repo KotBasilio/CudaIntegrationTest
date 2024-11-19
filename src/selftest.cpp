@@ -7,9 +7,18 @@
 #include "../dds-develop/include/dll.h"
 #include "../dds-develop/examples/hands.h"
 
-void WaitKey();
-
+void WaitKey(bool yes);
 void TestCudaWays();
+
+static bool _verboseDDS = false;
+//#define VERBOSE_DDS_TEST
+
+#ifdef VERBOSE_DDS_TEST
+   #define VERBOSE  printf
+#else
+   #define VERBOSE(...)
+#endif
+
 
 void IncInCPP(int* dest)
 {
@@ -58,23 +67,23 @@ extern unsigned char dcardRank[16];
 
 void PrintFut(char title[], futureTricks * fut)
 {
-   printf("%s\n", title);
+   VERBOSE("%s\n", title);
 
-   printf("%6s %-6s %-6s %-6s %-6s\n",
+   VERBOSE("%6s %-6s %-6s %-6s %-6s\n",
       "card", "suit", "rank", "equals", "score");
 
    for (int i = 0; i < fut->cards; i++)
    {
       char res[15] = "";
       equals_to_string(fut->equals[i], res);
-      printf("%6d %-6c %-6c %-6s %-6d\n",
+      VERBOSE("%6d %-6c %-6c %-6s %-6d\n",
          i,
          dcardSuit[ fut->suit[i] ],
          dcardRank[ fut->rank[i] ],
          res,
          fut->score[i]);
    }
-   printf("\n");
+   VERBOSE("\n");
 }
 
 #define NORTH    0
@@ -165,26 +174,25 @@ static void qaPrintHand(char title[], const deal& dl, char tail[])
    sprintf(text[DDS_STATS_LINE + 1] + DDS_STATS_OFFSET, "CTRL: %d", ctrl);
 
    // start with title and underline it
-   printf(title);
+   VERBOSE(title);
    char dashes[80];
    int l = static_cast<int>(strlen(title)) - 1;
    for (int i = 0; i < l; i++)
       dashes[i] = '-';
    dashes[l] = '\0';
-   printf("%s\n", dashes);
+   VERBOSE("%s\n", dashes);
 
    // print the v-screen
    for (int i = 0; i < DDS_HAND_LINES; i++)
-      printf("   %s\n", text[i]);
-   printf(tail);
-   //printf("\n\n");
+      VERBOSE("   %s\n", text[i]);
+   VERBOSE(tail);
 }
 
 void SetResources();
 
 void sample_main_SolveBoard()
 {
-   printf("Testing SolveBoard()\n");
+   VERBOSE("Testing SolveBoard()\n");
    bool isAllright = true;
 
    SetResources();
@@ -240,7 +248,7 @@ void sample_main_SolveBoard()
       match2 = CompareFut(&fut2, handno, solutions);
 
       // out
-      printf("--------------\nSolveBoard, hand %d:\n", handno + 1);
+      VERBOSE("--------------\nSolveBoard, hand %d:\n", handno + 1);
       sprintf(line, "solutions == 3 leads %s, trumps: %s\n",  haPlayerToStr(dl.first), haTrumpToStr(dl.trump) );
       PrintFut(line, &fut3);
       sprintf(line, "solutions == 2 leads %s, trumps: %s\n",  haPlayerToStr(dl.first), haTrumpToStr(dl.trump) );
@@ -252,19 +260,25 @@ void sample_main_SolveBoard()
       sprintf(line, "The board:\n");
       qaPrintHand(line, dl, tail);
       isAllright = isAllright && match2 && match3;
-      //WaitKey();
+      WaitKey(_verboseDDS);
    }
 
-   printf("\n=======================================\nThe testing ended with: %s\n",
-      (isAllright ? "SUCCESS" : "FAIL"));
+   printf("\n==============================\n"
+            "DDS solve one-threaded result: %s\n",
+            (isAllright ? "SUCCESS" : "FAIL"));
 }
 
 void DoSelfTests()
 {
+   #ifdef VERBOSE_DDS_TEST
+      _verboseDDS = true;
+   #endif
+                                             
    //sample_main_PlayBin();
    sample_main_SolveBoard();
    //sample_main_SolveBoard_S1();
    //sample_main_JK_Solve();
    TestHeap();
+   WaitKey(_verboseDDS);
 }
 

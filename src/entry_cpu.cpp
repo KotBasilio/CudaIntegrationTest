@@ -8,10 +8,12 @@ void TestHeap(void);
 extern void DoSelfTests();
 #define PLATFORM_GETCH _getch
 
-void WaitKey()
+void WaitKey(bool yes = true)
 {
-   printf("{Any key}\n");
-   PLATFORM_GETCH();
+   if (yes) {
+      printf("{Any key}\n");
+      PLATFORM_GETCH();
+   }
 }
 
 void TestCudaWays()
@@ -49,7 +51,6 @@ void TestCudaWays()
 void main()
 {
    DoSelfTests();
-   WaitKey();
 
    TestCudaWays();
    CudaClose();
