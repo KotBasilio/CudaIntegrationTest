@@ -27,6 +27,21 @@
     <ClCompile Include="dds-develop\src\ThreadMgr.cpp">
       <Filter>dds</Filter>
     </ClCompile>
+    <ClCompile Include="dds-develop\src\ABsearch.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
+    <ClCompile Include="dds-develop\src\QuickTricks.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
+    <ClCompile Include="dds-develop\src\LaterTricks.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
+    <ClCompile Include="dds-develop\src\ABstats.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
+    <ClCompile Include="dds-develop\src\TimerList.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dds">
@@ -65,6 +80,24 @@
       <Filter>dds</Filter>
     </ClInclude>
     <ClInclude Include="dds-develop\src\ThreadMgr.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\ABsearch.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\QuickTricks.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\LaterTricks.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\ABstats.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\TimerList.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\TimerGroup.h">
       <Filter>dds</Filter>
     </ClInclude>
   </ItemGroup>
