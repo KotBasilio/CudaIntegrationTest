@@ -3,7 +3,8 @@
 
 extern bool CudaWork(int *c, const int *a, const int *b, unsigned int size);
 extern bool CudaClose();
-void ShowMemStat();
+void TestHeap(void);
+
 extern void DoSelfTests();
 #define PLATFORM_GETCH _getch
 
@@ -47,11 +48,12 @@ void TestCudaWays()
 
 void main()
 {
-   TestCudaWays();
-   CudaClose();
+   DoSelfTests();
    WaitKey();
 
-   DoSelfTests();
+   TestCudaWays();
+   CudaClose();
+   TestHeap();
    WaitKey();
 }
 

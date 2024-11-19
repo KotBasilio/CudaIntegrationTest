@@ -25,7 +25,7 @@ ThreadMgr threadMgr;
 Memory::Memory() {}
 Memory::~Memory()
 {
-  Memory::Resize(0, DDS_TT_SMALL, 0, 0);
+  Memory::Resize(0, DDS_TT_LARGE, 0, 0);
 }
 
 void Memory::ReturnThread(const unsigned thrId)
@@ -63,16 +63,8 @@ void Memory::Resize(
     for (size_t i = oldSize; i < n; i++)
     {
       memory[i] = new ThreadData();
-      if (flag == DDS_TT_SMALL)
-      {
-         memory[i]->transTable = new TransTableS;
-         threadSizes[i] = "S";
-      }
-      else
-      {
-         memory[i]->transTable = new TransTableL;
-         threadSizes[i] = "L";
-      }
+      memory[i]->transTable = new TransTableL;
+      threadSizes[i] = "L";
 
       memory[i]->transTable->SetMemoryDefault(memDefault_MB);
       memory[i]->transTable->SetMemoryMaximum(memMaximum_MB);
@@ -159,7 +151,7 @@ void SetResources()
    scheduler.RegisterThreads(noOfThreads);
 
    // Clear the thread memory and fill it up again.
-   memory.Resize(0, DDS_TT_SMALL, 0, 0);
+   memory.Resize(0, DDS_TT_LARGE, 0, 0);
    memory.Resize(static_cast<unsigned>(noOfLargeThreads),
       DDS_TT_LARGE, THREADMEM_LARGE_DEF_MB, THREADMEM_LARGE_MAX_MB);
 

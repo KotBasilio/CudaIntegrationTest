@@ -36,8 +36,8 @@ void TestHeap(void)
    switch (heapstatus) {
       case _HEAPEMPTY: //printf("OK - empty heap\n");
          break;
-      case _HEAPEND:// 
-         printf("Heapcheck OK\n");
+      case _HEAPEND: 
+         //printf("Heapcheck OK\n");
          break;
       case _HEAPBADPTR:
          printf("ERROR - bad pointer to heap\n");
@@ -109,7 +109,7 @@ uint CalcNSLineHCP(const deal& dl, uint& ctrl)
    //return hcp.total;
 }
 
-static void qaPrintHand(char title[], const deal& dl)
+static void qaPrintHand(char title[], const deal& dl, char tail[])
 {
    int c, h, s, r;
    char text[DDS_HAND_LINES][DDS_FULL_LINE];
@@ -165,7 +165,7 @@ static void qaPrintHand(char title[], const deal& dl)
    sprintf(text[DDS_STATS_LINE + 1] + DDS_STATS_OFFSET, "CTRL: %d", ctrl);
 
    // start with title and underline it
-   printf("%s", title);
+   printf(title);
    char dashes[80];
    int l = static_cast<int>(strlen(title)) - 1;
    for (int i = 0; i < l; i++)
@@ -176,6 +176,7 @@ static void qaPrintHand(char title[], const deal& dl)
    // print the v-screen
    for (int i = 0; i < DDS_HAND_LINES; i++)
       printf("   %s\n", text[i]);
+   printf(tail);
    //printf("\n\n");
 }
 
@@ -198,6 +199,7 @@ void sample_main_SolveBoard()
    int threadIndex = 0;
    int res = RETURN_NO_FAULT;
    char line[80];
+   char tail[60];
    bool match2;
    bool match3;
 
@@ -217,42 +219,40 @@ void sample_main_SolveBoard()
          for (int s = 0; s < DDS_SUITS; s++)
             dl.remainCards[h][s] = holdings[handno][s][h];
 
+      // solve with auto-control vs expected results
       target = -1;
       solutions = 3;
       mode = 0;
-      //   res = SolveBoard(dl, target, solutions, mode, &fut3, threadIndex);
-
+      res = SolveBoard(dl, target, solutions, mode, &fut3, threadIndex);
       if (res != RETURN_NO_FAULT) {
          ErrorMessage(res, line);
          printf("DDS error: %s\n", line);
       }
-
-      // auto-control vs expected results
       match3 = CompareFut(&fut3, handno, solutions);
 
+      // solve with auto-control vs expected results
       solutions = 2;
-      //   res = SolveBoard(dl, target, solutions, mode, &fut2, threadIndex);
+      res = SolveBoard(dl, target, solutions, mode, &fut2, threadIndex);
       if (res != RETURN_NO_FAULT) {
          ErrorMessage(res, line);
          printf("DDS error: %s\n", line);
       }
-
-      // auto-control vs expected results
       match2 = CompareFut(&fut2, handno, solutions);
 
-      sprintf(line,
-         "SolveBoard, hand %d: solutions 3 %s, solutions 2 %s\n",
-         handno + 1,
-         (match3 ? "OK" : "ERROR"),
-         (match2 ? "OK" : "ERROR"));
-      qaPrintHand(line, dl);
-      isAllright = isAllright && match2 && match3;
-
+      // out
+      printf("--------------\nSolveBoard, hand %d:\n", handno + 1);
       sprintf(line, "solutions == 3 leads %s, trumps: %s\n",  haPlayerToStr(dl.first), haTrumpToStr(dl.trump) );
       PrintFut(line, &fut3);
       sprintf(line, "solutions == 2 leads %s, trumps: %s\n",  haPlayerToStr(dl.first), haTrumpToStr(dl.trump) );
       PrintFut(line, &fut2);
-      WaitKey();
+      sprintf(tail,
+         "Checking: sol=3 %s, sol=2 %s\n",
+         (match3 ? "OK" : "ERROR"),
+         (match2 ? "OK" : "ERROR"));
+      sprintf(line, "The board:\n");
+      qaPrintHand(line, dl, tail);
+      isAllright = isAllright && match2 && match3;
+      //WaitKey();
    }
 
    printf("\n=======================================\nThe testing ended with: %s\n",
