@@ -21,6 +21,12 @@
     <ClCompile Include="dds-develop\src\Moves.cpp">
       <Filter>dds</Filter>
     </ClCompile>
+    <ClCompile Include="dds-develop\src\Scheduler.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
+    <ClCompile Include="dds-develop\src\ThreadMgr.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dds">
@@ -50,6 +56,15 @@
       <Filter>dds</Filter>
     </ClInclude>
     <ClInclude Include="dds-develop\src\Moves.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\Scheduler.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\System.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\ThreadMgr.h">
       <Filter>dds</Filter>
     </ClInclude>
   </ItemGroup>

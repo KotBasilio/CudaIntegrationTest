@@ -10,67 +10,17 @@
 
 #include "../include/dll.h"
 #include "Memory.h"
+#include "System.h"
+#include "Scheduler.h"
+#include "ThreadMgr.h"
 
 #define DDS_SYSTEM_THREAD_BASIC 0
 #define DDS_SYSTEM_THREAD_SIZE 1
 
-class System
-{
-private:
-
-   RunMode runCat; // SOLVE / CALC / PLAY
-
-   int numThreads;
-   int sysMem_MB;
-   int thrDef_MB;
-   int thrMax_MB;
-
-   unsigned preferredSystem;
-
-   vector<bool> availableSystem;
-
-public:
-   System() { Reset(); }
-   ~System() {}
-
-   void Reset();
-
-   int RegisterParams(const int nThreads, const int mem_usable_MB)
-   {
-      // No upper limit -- caveat emptor.
-      if (nThreads < 1)
-         return RETURN_THREAD_INDEX;
-
-      numThreads = nThreads;
-      sysMem_MB = mem_usable_MB;
-      return RETURN_NO_FAULT;
-   }
-
-   int RegisterRun(
-      const RunMode r,
-      const boards& bop);
-
-   bool IsSingleThreaded() const;
-
-   bool IsIMPL() const;
-
-   bool ThreadOK(const int thrId) const;
-
-   void GetHardware(
-      int& ncores,
-      unsigned long long& kilobytesFree) const;
-
-   int PreferThreading(const unsigned code);
-
-   int RunThreads();
-
-   string str(DDSInfo * info) const;
-};
-
 System sysdep;
 Memory memory;
-//Scheduler scheduler;
-//ThreadMgr threadMgr;
+Scheduler scheduler;
+ThreadMgr threadMgr;
 
 Memory::Memory() {}
 Memory::~Memory()
@@ -375,25 +325,22 @@ void System::Reset()
 
 void SetResources()
 {
-   int maxMemoryMB = 0, maxThreadsIn = 0;
+   // Operate large threads only
    int thrMax = 12;
-
-   // We have enough memory for the maximum number of large threads.
-   int noOfThreads, noOfLargeThreads, noOfSmallThreads;
+   int noOfThreads, noOfLargeThreads;
    noOfThreads = thrMax;
    noOfLargeThreads = thrMax;
-   noOfSmallThreads = 0;
 
    int memMaxMB = 11387;
    sysdep.RegisterParams(noOfThreads, memMaxMB);
-   //scheduler.RegisterThreads(noOfThreads);
+   scheduler.RegisterThreads(noOfThreads);
 
    // Clear the thread memory and fill it up again.
    memory.Resize(0, DDS_TT_SMALL, 0, 0);
    memory.Resize(static_cast<unsigned>(noOfLargeThreads),
       DDS_TT_LARGE, THREADMEM_LARGE_DEF_MB, THREADMEM_LARGE_MAX_MB);
 
-   //threadMgr.Reset(noOfThreads);
+   threadMgr.Reset(noOfThreads);
 
    InitConstants();
 
