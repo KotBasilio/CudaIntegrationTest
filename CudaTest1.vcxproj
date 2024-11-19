@@ -85,11 +85,13 @@
     <ClCompile Include="dds-develop\examples\hands.cpp" />
     <ClCompile Include="dds-develop\src\ABsearch.cpp" />
     <ClCompile Include="dds-develop\src\ABstats.cpp" />
+    <ClCompile Include="dds-develop\src\Init.cpp" />
     <ClCompile Include="dds-develop\src\LaterTricks.cpp" />
     <ClCompile Include="dds-develop\src\Memory.cpp" />
     <ClCompile Include="dds-develop\src\Moves.cpp" />
     <ClCompile Include="dds-develop\src\QuickTricks.cpp" />
     <ClCompile Include="dds-develop\src\Scheduler.cpp" />
+    <ClCompile Include="dds-develop\src\SolverIF.cpp" />
     <ClCompile Include="dds-develop\src\ThreadMgr.cpp" />
     <ClCompile Include="dds-develop\src\TimerList.cpp" />
     <ClCompile Include="dds-develop\src\TransTableL.cpp" />
@@ -103,11 +105,13 @@
     <ClInclude Include="dds-develop\src\ABsearch.h" />
     <ClInclude Include="dds-develop\src\ABstats.h" />
     <ClInclude Include="dds-develop\src\dds.h" />
+    <ClInclude Include="dds-develop\src\Init.h" />
     <ClInclude Include="dds-develop\src\LaterTricks.h" />
     <ClInclude Include="dds-develop\src\Memory.h" />
     <ClInclude Include="dds-develop\src\Moves.h" />
     <ClInclude Include="dds-develop\src\QuickTricks.h" />
     <ClInclude Include="dds-develop\src\Scheduler.h" />
+    <ClInclude Include="dds-develop\src\SolverIF.h" />
     <ClInclude Include="dds-develop\src\System.h" />
     <ClInclude Include="dds-develop\src\ThreadMgr.h" />
     <ClInclude Include="dds-develop\src\TimerGroup.h" />

@@ -42,6 +42,12 @@
     <ClCompile Include="dds-develop\src\TimerList.cpp">
       <Filter>dds</Filter>
     </ClCompile>
+    <ClCompile Include="dds-develop\src\SolverIF.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
+    <ClCompile Include="dds-develop\src\Init.cpp">
+      <Filter>dds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dds">
@@ -98,6 +104,12 @@
       <Filter>dds</Filter>
     </ClInclude>
     <ClInclude Include="dds-develop\src\TimerGroup.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\SolverIF.h">
+      <Filter>dds</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\Init.h">
       <Filter>dds</Filter>
     </ClInclude>
   </ItemGroup>
