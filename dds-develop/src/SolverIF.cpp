@@ -24,7 +24,6 @@ extern System sysdep;
 extern Memory memory;
 extern Scheduler scheduler;
 
-
 int BoardRangeChecks(
   const deal& dl,
   const int target,

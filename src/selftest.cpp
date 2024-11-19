@@ -204,67 +204,70 @@ void sample_main_SolveBoard()
    int target;
    int solutions;
    int mode;
-   int threadIndex = 0;
    int res = RETURN_NO_FAULT;
    char line[80];
    char tail[60];
    bool match2;
    bool match3;
 
-   for (int handno = 0; handno < 3; handno++) {
-      dl.trump = trump[handno];
-      dl.first = first[handno];
+   for (int threadIndex = 11; threadIndex >= 0; threadIndex--) {
+      for (int handno = 0; handno < 3; handno++) {
+         dl.trump = trump[handno];
+         dl.first = first[handno];
 
-      dl.currentTrickSuit[0] = 0;
-      dl.currentTrickSuit[1] = 0;
-      dl.currentTrickSuit[2] = 0;
+         dl.currentTrickSuit[0] = 0;
+         dl.currentTrickSuit[1] = 0;
+         dl.currentTrickSuit[2] = 0;
 
-      dl.currentTrickRank[0] = 0;
-      dl.currentTrickRank[1] = 0;
-      dl.currentTrickRank[2] = 0;
+         dl.currentTrickRank[0] = 0;
+         dl.currentTrickRank[1] = 0;
+         dl.currentTrickRank[2] = 0;
 
-      for (int h = 0; h < DDS_HANDS; h++)
-         for (int s = 0; s < DDS_SUITS; s++)
-            dl.remainCards[h][s] = holdings[handno][s][h];
+         for (int h = 0; h < DDS_HANDS; h++)
+            for (int s = 0; s < DDS_SUITS; s++)
+               dl.remainCards[h][s] = holdings[handno][s][h];
 
-      // solve with auto-control vs expected results
-      target = -1;
-      solutions = 3;
-      mode = 0;
-      res = SolveBoard(dl, target, solutions, mode, &fut3, threadIndex);
-      if (res != RETURN_NO_FAULT) {
-         ErrorMessage(res, line);
-         printf("DDS error: %s\n", line);
+         // solve with auto-control vs expected results
+         target = -1;
+         solutions = 3;
+         mode = 0;
+         res = SolveBoard(dl, target, solutions, mode, &fut3, threadIndex);
+         if (res != RETURN_NO_FAULT) {
+            ErrorMessage(res, line);
+            printf("DDS error: %s\n", line);
+         }
+         match3 = CompareFut(&fut3, handno, solutions);
+
+         // solve with auto-control vs expected results
+         solutions = 2;
+         res = SolveBoard(dl, target, solutions, mode, &fut2, threadIndex);
+         if (res != RETURN_NO_FAULT) {
+            ErrorMessage(res, line);
+            printf("DDS error: %s\n", line);
+         }
+         match2 = CompareFut(&fut2, handno, solutions);
+
+         // out
+         VERBOSE("--------------\nSolveBoard, thrid=%d hand %d:\n", threadIndex, handno + 1);
+         sprintf(line, "solutions == 3 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
+         PrintFut(line, &fut3);
+         sprintf(line, "solutions == 2 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
+         PrintFut(line, &fut2);
+         sprintf(tail,
+            "Checking: sol=3 %s, sol=2 %s\n",
+            (match3 ? "OK" : "ERROR"),
+            (match2 ? "OK" : "ERROR"));
+         sprintf(line, "The board:\n");
+         qaPrintHand(line, dl, tail);
+         isAllright = isAllright && match2 && match3;
+         WaitKey(_verboseDDS);
       }
-      match3 = CompareFut(&fut3, handno, solutions);
-
-      // solve with auto-control vs expected results
-      solutions = 2;
-      res = SolveBoard(dl, target, solutions, mode, &fut2, threadIndex);
-      if (res != RETURN_NO_FAULT) {
-         ErrorMessage(res, line);
-         printf("DDS error: %s\n", line);
-      }
-      match2 = CompareFut(&fut2, handno, solutions);
-
-      // out
-      VERBOSE("--------------\nSolveBoard, hand %d:\n", handno + 1);
-      sprintf(line, "solutions == 3 leads %s, trumps: %s\n",  haPlayerToStr(dl.first), haTrumpToStr(dl.trump) );
-      PrintFut(line, &fut3);
-      sprintf(line, "solutions == 2 leads %s, trumps: %s\n",  haPlayerToStr(dl.first), haTrumpToStr(dl.trump) );
-      PrintFut(line, &fut2);
-      sprintf(tail,
-         "Checking: sol=3 %s, sol=2 %s\n",
-         (match3 ? "OK" : "ERROR"),
-         (match2 ? "OK" : "ERROR"));
-      sprintf(line, "The board:\n");
-      qaPrintHand(line, dl, tail);
-      isAllright = isAllright && match2 && match3;
-      WaitKey(_verboseDDS);
+      printf(".");
    }
 
    printf("\n==============================\n"
-            "DDS solve one-threaded result: %s\n",
+            "DDS solve one-threaded result: %s\n"
+            "==============================\n",
             (isAllright ? "SUCCESS" : "FAIL"));
 }
 

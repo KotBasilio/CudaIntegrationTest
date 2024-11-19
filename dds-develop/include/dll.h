@@ -6,19 +6,12 @@
 
    See LICENSE and README.
 */
-
-
 #ifndef DDS_DLL_H
 #define DDS_DLL_H
 
 #define DLLEXPORT
 #define STDCALL
-
-#ifdef __cplusplus
-  #define EXTERN_C extern "C"
-#else
-  #define EXTERN_C
-#endif
+#define EXTERN_C extern "C"
 
 /* Version 2.9.0. Allowing for 2 digit minor versions */
 #define DDS_VERSION 20900
