@@ -173,6 +173,6 @@ string System::str(DDSInfo* info) const
 
 bool System::ThreadOK(const int thrId) const
 {
-   return (thrId >= 0 && thrId < numThreads);
+   return (0 <= thrId && thrId < numThreads);
 }
 

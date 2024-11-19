@@ -11,14 +11,8 @@
 #ifndef DDS_DLL_H
 #define DDS_DLL_H
 
-#if defined(_WIN32) || defined(__CYGWIN__)
-  #define DLLEXPORT __declspec(dllexport)
-  #define STDCALL __stdcall
-#else
-  #define DLLEXPORT
-  #define STDCALL
-  #define INT8 char
-#endif
+#define DLLEXPORT
+#define STDCALL
 
 #ifdef __cplusplus
   #define EXTERN_C extern "C"
@@ -29,11 +23,9 @@
 /* Version 2.9.0. Allowing for 2 digit minor versions */
 #define DDS_VERSION 20900
 
-
 #define DDS_HANDS 4
 #define DDS_SUITS 4
 #define DDS_STRAINS 5
-
 
 #define MAXNOOFBOARDS 200
 
@@ -383,14 +375,6 @@ struct DDSInfo
   char systemString[1024];
 };
 
-
-
-EXTERN_C DLLEXPORT void STDCALL SetMaxThreads(
-  int userThreads);
-
-EXTERN_C DLLEXPORT int STDCALL SetThreading(
-  int code);
-
 EXTERN_C DLLEXPORT void STDCALL SetResources();
 
 EXTERN_C DLLEXPORT void STDCALL FreeMemory();
@@ -402,126 +386,6 @@ EXTERN_C DLLEXPORT int STDCALL SolveBoard(
   int mode,
   struct futureTricks * futp,
   int threadIndex);
-
-EXTERN_C DLLEXPORT int STDCALL SolveBoardPBN(
-  struct dealPBN dlpbn,
-  int target,
-  int solutions,
-  int mode,
-  struct futureTricks * futp,
-  int thrId);
-
-EXTERN_C DLLEXPORT int STDCALL CalcDDtable(
-  struct ddTableDeal tableDeal,
-  struct ddTableResults * tablep);
-
-EXTERN_C DLLEXPORT int STDCALL CalcDDtablePBN(
-  struct ddTableDealPBN tableDealPBN,
-  struct ddTableResults * tablep);
-
-EXTERN_C DLLEXPORT int STDCALL CalcAllTables(
-  struct ddTableDeals * dealsp,
-  int mode,
-  int trumpFilter[DDS_STRAINS],
-  struct ddTablesRes * resp,
-  struct allParResults * presp);
-
-EXTERN_C DLLEXPORT int STDCALL CalcAllTablesPBN(
-  struct ddTableDealsPBN * dealsp,
-  int mode,
-  int trumpFilter[DDS_STRAINS],
-  struct ddTablesRes * resp,
-  struct allParResults * presp);
-
-EXTERN_C DLLEXPORT int STDCALL SolveAllBoards(
-  struct boardsPBN * bop,
-  struct solvedBoards * solvedp);
-
-EXTERN_C DLLEXPORT int STDCALL SolveAllChunks(
-  struct boardsPBN * bop,
-  struct solvedBoards * solvedp,
-  int chunkSize);
-
-EXTERN_C DLLEXPORT int STDCALL SolveAllChunksBin(
-  struct boards * bop,
-  struct solvedBoards * solvedp,
-  int chunkSize);
-
-EXTERN_C DLLEXPORT int STDCALL SolveAllChunksPBN(
-  struct boardsPBN * bop,
-  struct solvedBoards * solvedp,
-  int chunkSize);
-
-EXTERN_C DLLEXPORT int STDCALL Par(
-  struct ddTableResults * tablep,
-  struct parResults * presp,
-  int vulnerable);
-
-EXTERN_C DLLEXPORT int STDCALL CalcPar(
-  struct ddTableDeal tableDeal,
-  int vulnerable,
-  struct ddTableResults * tablep,
-  struct parResults * presp);
-
-EXTERN_C DLLEXPORT int STDCALL CalcParPBN(
-  struct ddTableDealPBN tableDealPBN,
-  struct ddTableResults * tablep,
-  int vulnerable,
-  struct parResults * presp);
-
-EXTERN_C DLLEXPORT int STDCALL SidesPar(
-  struct ddTableResults * tablep,
-  struct parResultsDealer sidesRes[2],
-  int vulnerable);
-
-EXTERN_C DLLEXPORT int STDCALL DealerPar(
-  struct ddTableResults * tablep,
-  struct parResultsDealer * presp,
-  int dealer,
-  int vulnerable);
-
-EXTERN_C DLLEXPORT int STDCALL DealerParBin(
-  struct ddTableResults * tablep,
-  struct parResultsMaster * presp,
-  int dealer, 
-  int vulnerable);
-
-EXTERN_C DLLEXPORT int STDCALL SidesParBin(
-  struct ddTableResults * tablep,
-  struct parResultsMaster sidesRes[2],
-  int vulnerable);
-
-EXTERN_C DLLEXPORT int STDCALL ConvertToDealerTextFormat(
-  struct parResultsMaster * pres,
-  char * resp);
-
-EXTERN_C DLLEXPORT int STDCALL ConvertToSidesTextFormat(
-  struct parResultsMaster * pres,
-  struct parTextResults * resp);
-
-EXTERN_C DLLEXPORT int STDCALL AnalysePlayBin(
-  struct deal dl,
-  struct playTraceBin play,
-  struct solvedPlay * solved,
-  int thrId);
-
-EXTERN_C DLLEXPORT int STDCALL AnalysePlayPBN(
-  struct dealPBN dlPBN,
-  struct playTracePBN playPBN,
-  struct solvedPlay * solvedp,
-  int thrId);
-
-EXTERN_C DLLEXPORT int STDCALL AnalyseAllPlaysBin(
-  struct boards * bop,
-  struct playTracesBin * plp,
-  struct solvedPlays * solvedp,
-  int chunkSize);
-
-EXTERN_C DLLEXPORT int STDCALL AnalyseAllPlaysPBN(
-  struct boardsPBN * bopPBN,
-  struct playTracesPBN * plpPBN,
-  struct solvedPlays * solvedp,
-  int chunkSize);
 
 EXTERN_C DLLEXPORT void STDCALL GetDDSInfo(
   struct DDSInfo * info);
