@@ -119,29 +119,6 @@ class Scheduler
          SortCalc(),
          SortTrace();
 
-#ifdef DDS_SCHEDULER
-
-    int timeHist[10000];
-    int timeHistNT[10000];
-    int timeHistSuit[10000];
-
-    TimeStatList timeStrain;
-    TimeStatList timeRepeat;
-    TimeStatList timeDepth;
-    TimeStatList timeStrength;
-    TimeStatList timeFanout;
-    TimeStatList timeThread;
-    TimeStatList timeGroupActualStrain;
-    TimeStatList timeGroupPredStrain;
-    TimeStatList timeGroupDiffStrain;
-
-    long long timeMax;
-    long long blockMax;
-    long long timeBlock;
-
-    void InitTimes();
-#endif
-
     int PredictedTime(
       deal& dl,
       int number) const;
@@ -168,18 +145,6 @@ class Scheduler
     schedType GetNumber(const int thrId);
 
     int NumGroups() const;
-
-#ifdef DDS_SCHEDULER
-    void StartThreadTimer(const int thrId);
-
-    void EndThreadTimer(const int thrId);
-
-    void StartBlockTimer();
-
-    void EndBlockTimer();
-
-    void PrintTiming() const;
-#endif
 
 };
 

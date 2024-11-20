@@ -68,29 +68,18 @@ void (* Make_ptr_list[3])(
 
 
 int STDCALL SolveBoard(
-  deal dl,
-  int target,
-  int solutions,
-  int mode,
-  futureTricks * futp,
-  int thrId)
+   const deal& dl,
+   const int target,
+   const int solutions,
+   const int mode,
+   futureTricks * futp,
+   int thrId)
 {
-  if (! sysdep.ThreadOK(thrId))
-    return RETURN_THREAD_INDEX;
+   // get to thread data
+   if (! sysdep.ThreadOK(thrId))
+      return RETURN_THREAD_INDEX;
+   ThreadData* thrp = memory.GetPtr(thrId);
 
-  return SolveBoardInternal(memory.GetPtr(static_cast<unsigned>(thrId)), 
-    dl, target, solutions, mode, futp);
-}
-
-
-int SolveBoardInternal(
-  ThreadData * thrp,
-  const deal& dl,
-  const int target,
-  const int solutions,
-  const int mode,
-  futureTricks * futp)
-{
   // ----------------------------------------------------------
   // Formal parameter checks.
   // ----------------------------------------------------------

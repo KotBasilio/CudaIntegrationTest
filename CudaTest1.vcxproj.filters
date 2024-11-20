@@ -106,5 +106,8 @@
     <ClInclude Include="dds-develop\src\Init.h">
       <Filter>dds</Filter>
     </ClInclude>
+    <ClInclude Include="dds-develop\include\portab.h">
+      <Filter>dds</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

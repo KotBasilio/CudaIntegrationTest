@@ -28,7 +28,7 @@ Memory::~Memory()
   Memory::Resize(0, DDS_TT_LARGE, 0, 0);
 }
 
-void Memory::ReturnThread(const unsigned thrId)
+void Memory::ReturnThread(int thrId)
 {
    memory[thrId]->transTable->ReturnAllMemory();
    memory[thrId]->memUsed = Memory::MemoryInUseMB(thrId);
@@ -79,9 +79,9 @@ unsigned Memory::NumThreads() const
   return static_cast<unsigned>(memory.size());
 }
 
-ThreadData * Memory::GetPtr(const unsigned thrId)
+ThreadData * Memory::GetPtr(int thrId)
 {
-  if (thrId >= memory.size())
+  if (thrId < 0 || memory.size() <= thrId)
   {
     printf("Memory::GetPtr: %lu  vs. %llu\n", thrId, memory.size());
     return nullptr;
@@ -90,14 +90,14 @@ ThreadData * Memory::GetPtr(const unsigned thrId)
 }
 
 
-double Memory::MemoryInUseMB(const unsigned thrId) const
+double Memory::MemoryInUseMB(int thrId) const
 {
   return memory[thrId]->transTable->MemoryInUse() +
     8192. * sizeof(relRanksType) / static_cast<double>(1024.);
 }
 
 
-string Memory::ThreadSize(const unsigned thrId) const
+string Memory::ThreadSize(int thrId) const
 {
   return threadSizes[thrId];
 }

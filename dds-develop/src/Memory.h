@@ -84,7 +84,7 @@ class Memory
 
     ~Memory();
 
-    void ReturnThread(const unsigned thrId);
+    void ReturnThread(int thrId);
 
     void Resize(
       const unsigned n,
@@ -94,11 +94,11 @@ class Memory
 
     unsigned NumThreads() const;
 
-    ThreadData * GetPtr(const unsigned thrId);
+    ThreadData * GetPtr(int thrId);
 
-    double MemoryInUseMB(const unsigned thrId) const;
+    double MemoryInUseMB(int thrId) const;
 
-    string ThreadSize(const unsigned thrId) const;
+    string ThreadSize(int thrId) const;
 };
 
 #endif

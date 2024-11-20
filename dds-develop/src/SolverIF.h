@@ -14,14 +14,6 @@
 #include "Memory.h"
 
 
-int SolveBoardInternal(
-  ThreadData * thrp,
-  const deal& dl,
-  const int target,
-  const int solutions,
-  const int mode,
-  futureTricks * futp);
-
 int SolveSameBoard(
   ThreadData * thrp,
   const deal& dl,

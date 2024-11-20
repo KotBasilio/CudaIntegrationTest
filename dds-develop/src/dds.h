@@ -14,13 +14,6 @@
 #include "../include/dll.h"
 
 
-#if defined(DDS_MEMORY_LEAKS) && defined(_MSC_VER)
-  #define DDS_MEMORY_LEAKS_WIN32
-  #define _CRTDBG_MAP_ALLOC
-  #include <crtdbg.h>
-#endif
-
-
 #define THREADMEM_SMALL_MAX_MB 30
 #define THREADMEM_SMALL_DEF_MB 20
 #define THREADMEM_LARGE_MAX_MB 160

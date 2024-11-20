@@ -70,23 +70,7 @@ public:
       return RETURN_NO_FAULT;
    }
 
-   int RegisterRun(
-      const RunMode r,
-      const boards& bop);
-
-   bool IsSingleThreaded() const;
-
-   bool IsIMPL() const;
-
    bool ThreadOK(const int thrId) const;
-
-   void GetHardware(
-      int& ncores,
-      unsigned long long& kilobytesFree) const;
-
-   int PreferThreading(const unsigned code);
-
-   int RunThreads();
 
    string str(DDSInfo * info) const;
 };

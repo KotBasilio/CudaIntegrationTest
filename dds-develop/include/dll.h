@@ -373,10 +373,10 @@ EXTERN_C DLLEXPORT void STDCALL SetResources();
 EXTERN_C DLLEXPORT void STDCALL FreeMemory();
 
 EXTERN_C DLLEXPORT int STDCALL SolveBoard(
-  struct deal dl,
-  int target,
-  int solutions,
-  int mode,
+  const struct deal &dl,
+  const int target,
+  const int solutions,
+  const int mode,
   struct futureTricks * futp,
   int threadIndex);
 
