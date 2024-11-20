@@ -70,7 +70,11 @@ void TestHeap(void)
 
 class CTestSuite
 {
-   void PrintFut(char title[], futureTricks* fut)
+   futureTricks mFut1[MAX_THREADS_IN_TEST][TEST_SOLVE_SAME*2]; // solutions == 1
+   futureTricks mFut2[MAX_THREADS_IN_TEST][3]; // solutions == 2
+   futureTricks mFut3[MAX_THREADS_IN_TEST][3]; // solutions == 3
+
+   void PrintFut(char title[], const futureTricks* fut)
    {
       VERBOSE("%s\n", title);
 
@@ -219,6 +223,23 @@ class CTestSuite
       #endif
    }
       
+   void VerboseLogOn23(deal& dl, const futureTricks* fut3, const futureTricks* fut2, bool match3, bool match2)
+   {
+      char line[80];
+      char tail[60];
+
+      sprintf(line, "solutions == 3 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
+      PrintFut(line, fut3);
+      sprintf(line, "solutions == 2 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
+      PrintFut(line, fut2);
+      sprintf(tail,
+         "Checking: sol=3 %s, sol=2 %s\n",
+         (match3 ? "OK" : "ERROR"),
+         (match2 ? "OK" : "ERROR"));
+      sprintf(line, "The board:\n");
+      qaPrintHand(line, dl, tail);
+   }
+
    void SolveLinear()
    {
       printf("Linear test for SolveBoard()");
@@ -234,8 +255,6 @@ class CTestSuite
       int solutions;
       int mode = 0;
       int res = RETURN_NO_FAULT;
-      char line[80];
-      char tail[60];
       bool match1;
       bool match2;
       bool match3;
@@ -260,16 +279,7 @@ class CTestSuite
 
             // out
             VERBOSE("--------------\nSolveBoard, thrid=%d hand %d:\n", threadIndex, handno);
-            sprintf(line, "solutions == 3 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
-            PrintFut(line, &fut3);
-            sprintf(line, "solutions == 2 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
-            PrintFut(line, &fut2);
-            sprintf(tail,
-               "Checking: sol=3 %s, sol=2 %s\n",
-               (match3 ? "OK" : "ERROR"),
-               (match2 ? "OK" : "ERROR"));
-            sprintf(line, "The board:\n");
-            qaPrintHand(line, dl, tail);
+            VerboseLogOn23(dl, &fut3, &fut2, match3, match2);
             isAllright = isAllright && match2 && match3;
          }
 
@@ -295,10 +305,10 @@ class CTestSuite
          printf(".");
       }
 
-      printf("\n==============================\n"
-         "One-threaded DDS solve test: %s\n"
-         "==============================\n",
-         (isAllright ? "SUCCESS" : "FAIL"));
+      printf("\n===============================\n"
+               "One-threaded DDS solve test: %s\n"
+               "===============================\n",
+               (isAllright ? "SUCCESS" : "FAIL"));
    }
 
    // separate solving and testing
@@ -309,9 +319,6 @@ class CTestSuite
       bool isAllright = true;
 
       deal dl;
-      futureTricks fut1[MAX_THREADS_IN_TEST][TEST_SOLVE_SAME*2]; // solutions == 1
-      futureTricks fut2[MAX_THREADS_IN_TEST][3]; // solutions == 2
-      futureTricks fut3[MAX_THREADS_IN_TEST][3]; // solutions == 3
 
       int target = -1;
       int mode = 0;
@@ -324,8 +331,8 @@ class CTestSuite
          for (; i < 3; i++) {
             int handno = (i + threadIndex) % 3; // mix up the order of solving
             FillDeal(dl, handno);
-            auto out3 = &fut3[threadIndex][handno];
-            auto out2 = &fut2[threadIndex][handno];
+            auto out3 = &mFut3[threadIndex][handno];
+            auto out2 = &mFut2[threadIndex][handno];
 
             int solutions = 3;
             res = SolveBoard(dl, target, solutions, mode, out3, threadIndex);
@@ -340,68 +347,58 @@ class CTestSuite
          int solutions = 1;
          for (int handno = i; handno < TEST_HOLDINGS_COUNT; handno++) {
             FillDeal(dl, handno);
-            auto out1 = &fut1[threadIndex][handno - i];
+            auto out1 = &mFut1[threadIndex][handno - i];
             res = SolveBoard(dl, target, solutions, mode, out1, threadIndex);
             NoticeErrorDDS(res, isAllright);
             dl.trump = 0;
             dl.first = 0;
-            auto out4 = &fut1[threadIndex][handno - i + TEST_SOLVE_SAME];
+            auto out4 = &mFut1[threadIndex][handno - i + TEST_SOLVE_SAME];
             res = SolveBoard(dl, target, solutions, mode, out4, threadIndex);
             NoticeErrorDDS(res, isAllright);
          }
       }
 
       // control
-      char line[80], tail[60];
       bool match2;
       bool match3;
       for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
          int handno = 0;
          for (; handno < 3; handno++) {
-            auto cmp3 = &fut3[threadIndex][handno];
-            auto cmp2 = &fut2[threadIndex][handno];
+            auto cmp3 = &mFut3[threadIndex][handno];
+            auto cmp2 = &mFut2[threadIndex][handno];
             match3 = CompareFut(cmp3, handno, 3);
             match2 = CompareFut(cmp2, handno, 2);
 
-            VERBOSE("--------------\nSolveBoard, thrid=%d hand %d:\n", threadIndex, handno);
+            VERBOSE("--------------\nSeparated Solve, thrid=%d hand %d:\n", threadIndex, handno);
             FillDeal(dl, handno);
-            sprintf(line, "solutions == 3 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
-            PrintFut(line, cmp3);
-            sprintf(line, "solutions == 2 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
-            PrintFut(line, cmp2);
-            sprintf(tail,
-               "Checking: sol=3 %s, sol=2 %s\n",
-               (match3 ? "OK" : "ERROR"),
-               (match2 ? "OK" : "ERROR"));
-            sprintf(line, "The board:\n");
-            qaPrintHand(line, dl, tail);
+            VerboseLogOn23(dl, cmp3, cmp2, match3, match2);
             isAllright = isAllright && match2 && match3;
             WaitKey(_verboseDDS);
          }
          int solutions = 1;
          for (int idx = 0; handno < TEST_HOLDINGS_COUNT; handno++, idx++) {
             FillDeal(dl, handno);
-            auto cmp1A = &fut1[threadIndex][idx];
-            auto cmp1B = &fut1[threadIndex][idx + TEST_SOLVE_SAME];
+            auto cmp1A = &mFut1[threadIndex][idx];
+            auto cmp1B = &mFut1[threadIndex][idx + TEST_SOLVE_SAME];
             isAllright = isAllright && CompareFut(cmp1A, handno, solutions);
             isAllright = isAllright && CompareFut(cmp1B, handno + TEST_SOLVE_SAME, solutions);
          }
       }
 
       printf("\n==============================\n"
-         "Separated DDS solve test: %s\n"
-         "==============================\n",
-         (isAllright ? "SUCCESS" : "FAIL"));
+               "Separated DDS solve test: %s\n"
+               "==============================\n",
+               (isAllright ? "SUCCESS" : "FAIL"));
    }
 };
 
 void DoSelfTests()
 {
-   CTestSuite tst;
+   auto tst = new CTestSuite;
 
    //tst_PlayBin();
-   tst.SolveLinear();
-   tst.SeparatedSolve();
+   tst->SolveLinear();
+   tst->SeparatedSolve();
    //tst_JK_Solve();
    TestHeap();
    WaitKey(_verboseDDS);
