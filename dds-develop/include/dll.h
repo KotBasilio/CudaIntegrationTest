@@ -9,10 +9,6 @@
 #ifndef DDS_DLL_H
 #define DDS_DLL_H
 
-#define DLLEXPORT
-#define STDCALL
-#define EXTERN_C extern "C"
-
 /* Version 2.9.0. Allowing for 2 digit minor versions */
 #define DDS_VERSION 20900
 
@@ -324,55 +320,10 @@ struct solvedPlays
   struct solvedPlay solved[MAXNOOFBOARDS];
 };
 
-struct DDSInfo
-{
-  // Version 2.8.0 has 2, 8, 0 and a string of 2.8.0
-  int major, minor, patch; 
-  char versionString[10];
+void  SetResources();
+void  FreeMemory();
 
-  // Currently 0 = unknown, 1 = Windows, 2 = Cygwin, 3 = Linux, 4 = Apple
-  int system;
-
-  // We know 32 and 64-bit systems.
-  int numBits;
-
-  // Currently 0 = unknown, 1 = Microsoft Visual C++, 2 = mingw,
-  // 3 = GNU g++, 4 = clang
-  int compiler;
-
-  // Currently 0 = none, 1 = DllMain, 2 = Unix-style
-  int constructor;
-
-  int numCores;
-
-  // Currently 
-  // 0 = none, 
-  // 1 = Windows (native), 
-  // 2 = OpenMP, 
-  // 3 = GCD,
-  // 4 = Boost,
-  // 5 = STL,
-  // 6 = TBB,
-  // 7 = STLIMPL (for_each), experimental only
-  // 8 = PPLIMPL (for_each), experimental only
-  int threading;
-
-  // The actual number of threads configured
-  int noOfThreads;
-
-  // This will break if there are > 128 threads...
-  // The string is of the form LLLSSS meaning 3 large TT memories
-  // and 3 small ones.
-  char threadSizes[128];
-
-  char systemString[1024];
-};
-
-EXTERN_C DLLEXPORT void STDCALL SetResources();
-
-EXTERN_C DLLEXPORT void STDCALL FreeMemory();
-
-EXTERN_C DLLEXPORT int STDCALL SolveBoard(
+int  SolveBoard(
   const struct deal &dl,
   const int target,
   const int solutions,
@@ -380,11 +331,6 @@ EXTERN_C DLLEXPORT int STDCALL SolveBoard(
   struct futureTricks * futp,
   int threadIndex);
 
-EXTERN_C DLLEXPORT void STDCALL GetDDSInfo(
-  struct DDSInfo * info);
-
-EXTERN_C DLLEXPORT void STDCALL ErrorMessage(
-  int code,
-  char line[80]);
+void  ErrorMessage(int code, char line[80]);
 
 #endif

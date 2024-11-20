@@ -76,10 +76,6 @@ bool ABsearch(
   bool success = (thrp->nodeTypeStore[hand] == MAXNODE ? true : false);
   bool value = ! success;
 
-#ifdef DDS_TOP_LEVEL
-  thrp->nodes++;
-#endif
-
   TIMER_START(TIMER_NO_MOVEGEN, depth);
   for (int ss = 0; ss < DDS_SUITS; ss++)
     thrp->lowestWin[depth][ss] = 0;
@@ -102,9 +98,6 @@ bool ABsearch(
     TIMER_START(TIMER_NO_MAKE, depth);
     moveType const * mply = thrp->moves.MakeNext(tricks, 0,
       posPoint->winRanks[depth]);
-#ifdef DDS_AB_STATS
-    thrp->ABStats.IncrNode(depth);
-#endif
     TIMER_END(TIMER_NO_MAKE, depth);
 
     if (mply == NULL)
@@ -143,9 +136,6 @@ bool ABsearch(
 ABexit:
 
   AB_COUNT(AB_MOVE_LOOP, value, depth);
-#ifdef DDS_AB_STATS
-  thrp->ABStats.PrintStats(thrp->fileABstats.GetStream());
-#endif
 
   return value;
 }
@@ -166,10 +156,6 @@ bool ABsearch0(
   int trump = thrp->trump;
   int hand = posPoint->first[depth];
   int tricks = depth >> 2;
-
-#ifdef DDS_TOP_LEVEL
-  thrp->nodes++;
-#endif
 
   for (int ss = 0; ss < DDS_SUITS; ss++)
     posPoint->winRanks[depth][ss] = 0;
@@ -353,9 +339,6 @@ bool ABsearch0(
     TIMER_START(TIMER_NO_MAKE, depth);
     moveType const * mply = thrp->moves.MakeNext(tricks, 0,
       posPoint->winRanks[depth]);
-#ifdef DDS_AB_STATS
-    thrp->ABStats.IncrNode(depth);
-#endif
     TIMER_END(TIMER_NO_MAKE, depth);
 
     if (mply == NULL)
@@ -463,10 +446,6 @@ bool ABsearch1(
   bool value = ! success;
   int tricks = (depth + 3) >> 2;
 
-#ifdef DDS_TOP_LEVEL
-  thrp->nodes++;
-#endif
-
   TIMER_START(TIMER_NO_QT, depth);
   int res = QuickTricksSecondHand(* posPoint, hand, depth, target,
      trump, * thrp);
@@ -495,9 +474,6 @@ bool ABsearch1(
     TIMER_START(TIMER_NO_MAKE, depth);
     moveType const * mply = thrp->moves.MakeNext(tricks, 1,
       posPoint->winRanks[depth]);
-#ifdef DDS_AB_STATS
-    thrp->ABStats.IncrNode(depth);
-#endif
     TIMER_END(TIMER_NO_MAKE, depth);
 
     if (mply == NULL)
@@ -551,10 +527,6 @@ bool ABsearch2(
   bool value = ! success;
   int tricks = (depth + 3) >> 2;
 
-#ifdef DDS_TOP_LEVEL
-  thrp->nodes++;
-#endif
-
   TIMER_START(TIMER_NO_MOVEGEN, depth);
   for (int ss = 0; ss < DDS_SUITS; ss++)
     thrp->lowestWin[depth][ss] = 0;
@@ -579,9 +551,6 @@ bool ABsearch2(
 
     Make2(posPoint, depth, mply);
 
-#ifdef DDS_AB_STATS
-    thrp->ABStats.IncrNode(depth);
-#endif
     TIMER_END(TIMER_NO_MAKE, depth);
 
     TIMER_START(TIMER_NO_AB, depth - 1);
@@ -634,10 +603,6 @@ bool ABsearch3(
   bool success = (thrp->nodeTypeStore[hand] == MAXNODE ? true : false);
   bool value = ! success;
 
-#ifdef DDS_TOP_LEVEL
-  thrp->nodes++;
-#endif
-
   TIMER_START(TIMER_NO_MOVEGEN, depth);
   for (int ss = 0; ss < DDS_SUITS; ss++)
     thrp->lowestWin[depth][ss] = 0;
@@ -657,9 +622,6 @@ bool ABsearch3(
     TIMER_START(TIMER_NO_MAKE, depth);
     moveType const * mply = thrp->moves.MakeNext(tricks, 3,
       posPoint->winRanks[depth]);
-#ifdef DDS_AB_STATS
-    thrp->ABStats.IncrNode(depth);
-#endif
     TIMER_END(TIMER_NO_MAKE, depth);
 
     if (mply == NULL)

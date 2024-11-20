@@ -67,7 +67,7 @@ void (* Make_ptr_list[3])(
   = { Make0, Make1, Make2 };
 
 
-int STDCALL SolveBoard(
+int  SolveBoard(
    const deal& dl,
    const int target,
    const int solutions,
@@ -168,28 +168,6 @@ int STDCALL SolveBoard(
 
 
   // ----------------------------------------------------------
-  // Last trick, easy to solve.
-  // ----------------------------------------------------------
-
-  if (cardCount <= 4)
-  {
-    int leadRank, leadSuit, leadSideWins;
-
-    LastTrickWinner(dl, thrp, handToPlay, handRelFirst,
-      leadRank, leadSuit, leadSideWins);
-
-    futp->nodes = 0;
-    futp->cards = 1;
-    futp->suit[0] = leadSuit;
-    futp->rank[0] = leadRank;
-    futp->equals[0] = 0;
-    futp->score[0] = (target == 0 && solutions < 3 ? 0 : leadSideWins);
-
-    goto SOLVER_DONE;
-  }
-
-
-  // ----------------------------------------------------------
   // More detailed initialization.
   // ----------------------------------------------------------
 
@@ -268,15 +246,6 @@ int STDCALL SolveBoard(
 
   InitWinners(dl, thrp->lookAheadPos, thrp);
 
-#ifdef DDS_AB_STATS
-  thrp->ABStats.Reset();
-  thrp->ABStats.ResetCum();
-#endif
-
-#ifdef DDS_TOP_LEVEL
-  thrp->nodes = 0;
-#endif
-
   thrp->moves.Init(
     trick,
     handRelFirst,
@@ -345,11 +314,6 @@ int STDCALL SolveBoard(
                       iniDepth,
                       thrp);
         TIMER_END(TIMER_NO_AB, iniDepth);
-
-#ifdef DDS_TOP_LEVEL
-        DumpTopLevel(thrp->fileTopLevel.GetStream(), 
-          * thrp, guess, lowerbound, upperbound, 1);
-#endif
 
         if (thrp->val)
         {
@@ -442,11 +406,6 @@ int STDCALL SolveBoard(
                   thrp);
       TIMER_END(TIMER_NO_AB, iniDepth);
 
-#ifdef DDS_TOP_LEVEL
-      DumpTopLevel(thrp->fileTopLevel.GetStream(),
-        * thrp, guess, lowerbound, upperbound, 1);
-#endif
-
       if (thrp->val)
       {
         mv = thrp->bestMove[iniDepth];
@@ -509,11 +468,6 @@ int STDCALL SolveBoard(
                   thrp);
     TIMER_END(TIMER_NO_AB, iniDepth);
 
-#ifdef DDS_TOP_LEVEL
-    DumpTopLevel(thrp->fileTopLevel.GetStream(), 
-      * thrp, target, -1, -1, 0);
-#endif
-
     if (! thrp->val)
     {
       // No move. If target was 1, then we are sure that in
@@ -574,11 +528,6 @@ int STDCALL SolveBoard(
                   iniDepth,
                   thrp);
     TIMER_END(TIMER_NO_AB, iniDepth);
-
-#ifdef DDS_TOP_LEVEL
-    DumpTopLevel(thrp->fileTopLevel.GetStream(),
-      * thrp, target, -1, -1, 2);
-#endif
 
     if (! thrp->val)
       break;
@@ -674,15 +623,6 @@ int SolveSameBoard(
     thrp->nodeTypeStore[3] = MAXNODE;
   }
 
-#ifdef DDS_AB_STATS
-  thrp->ABStats.Reset();
-  thrp->ABStats.ResetCum();
-#endif
-
-#ifdef DDS_TOP_LEVEL
-  thrp->nodes = 0;
-#endif
-
   thrp->moves.Reinit(trick, dl.first);
 
   int guess = hint;
@@ -700,11 +640,6 @@ int SolveSameBoard(
                   iniDepth,
                   thrp);
     TIMER_END(TIMER_NO_AB, iniDepth);
-
-#ifdef DDS_TOP_LEVEL
-    DumpTopLevel(thrp->fileTopLevel.GetStream(),
-      * thrp, guess, lowerbound, upperbound, 1);
-#endif
 
     if (thrp->val)
       lowerbound = guess++;
@@ -826,15 +761,6 @@ int AnalyseLaterBoard(
     return RETURN_NO_FAULT;
   }
 
-#ifdef DDS_AB_STATS
-  thrp->ABStats.Reset();
-  thrp->ABStats.ResetCum();
-#endif
-
-#ifdef DDS_TOP_LEVEL
-  thrp->nodes = 0;
-#endif
-
   int guess = hint,
       lowerbound,
       upperbound;
@@ -861,11 +787,6 @@ int AnalyseLaterBoard(
                   iniDepth,
                   thrp);
     TIMER_END(TIMER_NO_AB, iniDepth);
-
-#ifdef DDS_TOP_LEVEL
-    DumpTopLevel(thrp->fileTopLevel.GetStream(),
-      * thrp, guess, lowerbound, upperbound, 1);
-#endif
 
     if (thrp->val)
       lowerbound = guess++;

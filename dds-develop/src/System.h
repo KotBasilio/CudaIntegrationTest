@@ -71,8 +71,6 @@ public:
    }
 
    bool ThreadOK(const int thrId) const;
-
-   string str(DDSInfo * info) const;
 };
 
 #endif

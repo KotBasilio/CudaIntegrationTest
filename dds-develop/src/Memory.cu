@@ -164,13 +164,6 @@ void SetResources()
    //   sysMem_MB	11387	int
 }
 
-string System::str(DDSInfo* info) const
-{
-   const string st = "ss.str()";
-   strcpy_s(info->systemString, sizeof(info->systemString), st.c_str());
-   return st;
-}
-
 bool System::ThreadOK(const int thrId) const
 {
    return (0 <= thrId && thrId < numThreads);

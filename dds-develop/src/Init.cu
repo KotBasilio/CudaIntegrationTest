@@ -361,22 +361,12 @@ void ResetBestMoves(
 
   thrp->memUsed = thrp->transTable->MemoryInUse() +
                   ThreadMemoryUsed();
-
-#ifdef DDS_AB_STATS
-  thrp->ABStats.Reset();
-#endif
 }
 
 extern System sysdep;
 extern Memory memory;
 
-void STDCALL GetDDSInfo(DDSInfo * info)
-{
-  (void) sysdep.str(info);
-}
-
-
-void STDCALL FreeMemory()
+void  FreeMemory()
 {
   for (unsigned thrId = 0; thrId < memory.NumThreads(); thrId++)
     memory.ReturnThread(thrId);
@@ -394,7 +384,7 @@ double ThreadMemoryUsed()
 }
 
 
-void STDCALL ErrorMessage(int code, char line[80])
+void  ErrorMessage(int code, char line[80])
 {
   switch (code)
   {
