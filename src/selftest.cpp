@@ -284,7 +284,8 @@ class CTestSuite
             dl.first = 0;
             res = SolveBoard(dl, target, solutions, mode, &fut1, threadIndex);
             // can use SolveSameBoard(threadIndex, dl, &fut1, fut1.score[0]); 
-            // but only for the same declarer
+            // but only for the same suit. 
+            // So, it's handy only for par calculaton
             NoticeErrorDDS(res, isAllright);
             match1 = CompareFut(&fut1, handno + TEST_SOLVE_SAME, solutions);
             isAllright = isAllright && match1;
@@ -308,6 +309,7 @@ class CTestSuite
       bool isAllright = true;
 
       deal dl;
+      futureTricks fut1[MAX_THREADS_IN_TEST][TEST_SOLVE_SAME*2]; // solutions == 1
       futureTricks fut2[MAX_THREADS_IN_TEST][3]; // solutions == 2
       futureTricks fut3[MAX_THREADS_IN_TEST][3]; // solutions == 3
 
@@ -318,7 +320,8 @@ class CTestSuite
 
       // solve & store
       for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
-         for (int i = 0; i < 3; i++) {
+         int i = 0;
+         for (; i < 3; i++) {
             int handno = (i + threadIndex) % 3; // mix up the order of solving
             FillDeal(dl, handno);
             auto out3 = &fut3[threadIndex][handno];
@@ -333,6 +336,19 @@ class CTestSuite
             NoticeErrorDDS(res, isAllright);
          }
          printf(".");
+
+         int solutions = 1;
+         for (int handno = i; handno < TEST_HOLDINGS_COUNT; handno++) {
+            FillDeal(dl, handno);
+            auto out1 = &fut1[threadIndex][handno - i];
+            res = SolveBoard(dl, target, solutions, mode, out1, threadIndex);
+            NoticeErrorDDS(res, isAllright);
+            dl.trump = 0;
+            dl.first = 0;
+            auto out4 = &fut1[threadIndex][handno - i + TEST_SOLVE_SAME];
+            res = SolveBoard(dl, target, solutions, mode, out4, threadIndex);
+            NoticeErrorDDS(res, isAllright);
+         }
       }
 
       // control
@@ -340,7 +356,8 @@ class CTestSuite
       bool match2;
       bool match3;
       for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
-         for (int handno = 0; handno < 3; handno++) {
+         int handno = 0;
+         for (; handno < 3; handno++) {
             auto cmp3 = &fut3[threadIndex][handno];
             auto cmp2 = &fut2[threadIndex][handno];
             match3 = CompareFut(cmp3, handno, 3);
@@ -360,6 +377,14 @@ class CTestSuite
             qaPrintHand(line, dl, tail);
             isAllright = isAllright && match2 && match3;
             WaitKey(_verboseDDS);
+         }
+         int solutions = 1;
+         for (int idx = 0; handno < TEST_HOLDINGS_COUNT; handno++, idx++) {
+            FillDeal(dl, handno);
+            auto cmp1A = &fut1[threadIndex][idx];
+            auto cmp1B = &fut1[threadIndex][idx + TEST_SOLVE_SAME];
+            isAllright = isAllright && CompareFut(cmp1A, handno, solutions);
+            isAllright = isAllright && CompareFut(cmp1B, handno + TEST_SOLVE_SAME, solutions);
          }
       }
 
