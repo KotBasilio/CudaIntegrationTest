@@ -331,6 +331,12 @@ int  SolveBoard(
   struct futureTricks * futp,
   int threadIndex);
 
+int SolveSameBoard(
+   int thrId,
+   const deal& dl,
+   futureTricks * futp,
+   const int hint);
+
 void  ErrorMessage(int code, char line[80]);
 
 #endif

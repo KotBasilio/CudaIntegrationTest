@@ -22,11 +22,6 @@ extern unsigned char dcardSuit[5];
 extern unsigned char dcardHand[4];
 extern unsigned char dcardRank[16];
 
-#define NORTH    0
-#define EAST     1
-#define SOUTH    2
-#define WEST     3
-
 #define DDS_FULL_LINE 76
 #define DDS_HAND_OFFSET 12
 #define DDS_HAND_LINES 12
@@ -185,8 +180,13 @@ class CTestSuite
 
    void FillDeal(deal& dl, int handno)
    {
-      dl.trump = trump[handno];
-      dl.first = first[handno];
+      if (handno < 3) {
+         dl.trump = trump[handno];
+         dl.first = first[handno];
+      } else {
+         dl.trump = 3;
+         dl.first = 3;
+      }
 
       dl.currentTrickSuit[0] = 0;
       dl.currentTrickSuit[1] = 0;
@@ -226,8 +226,9 @@ class CTestSuite
       bool isAllright = true;
 
       deal dl;
-      futureTricks fut2, // solutions == 2
-         fut3; // solutions == 3
+      futureTricks fut1; // solutions == 1
+      futureTricks fut2; // solutions == 2
+      futureTricks fut3; // solutions == 3 TEST_HOLDINGS_COUNT
 
       int target = -1;
       int solutions;
@@ -235,12 +236,14 @@ class CTestSuite
       int res = RETURN_NO_FAULT;
       char line[80];
       char tail[60];
+      bool match1;
       bool match2;
       bool match3;
       int threadBegin = MAX_THREADS_IN_TEST - 1;
 
       for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
-         for (int handno = 0; handno < 3; handno++) {
+         int handno = 0;
+         for (; handno < 3; handno++) {
             FillDeal(dl, handno);
 
             // solve with auto-control vs expected results
@@ -268,8 +271,26 @@ class CTestSuite
             sprintf(line, "The board:\n");
             qaPrintHand(line, dl, tail);
             isAllright = isAllright && match2 && match3;
-            WaitKey(_verboseDDS);
          }
+
+         solutions = 1;
+         for (; handno < TEST_HOLDINGS_COUNT; handno++) {
+            FillDeal(dl, handno);
+            res = SolveBoard(dl, target, solutions, mode, &fut1, threadIndex);
+            NoticeErrorDDS(res, isAllright);
+            match1 = CompareFut(&fut1, handno, solutions);
+            isAllright = isAllright && match1;
+            dl.trump = 0;
+            dl.first = 0;
+            res = SolveBoard(dl, target, solutions, mode, &fut1, threadIndex);
+            // can use SolveSameBoard(threadIndex, dl, &fut1, fut1.score[0]); 
+            // but only for the same declarer
+            NoticeErrorDDS(res, isAllright);
+            match1 = CompareFut(&fut1, handno + TEST_SOLVE_SAME, solutions);
+            isAllright = isAllright && match1;
+         }
+         WaitKey(_verboseDDS);
+
          printf(".");
       }
 
@@ -351,12 +372,12 @@ class CTestSuite
 
 void DoSelfTests()
 {
-   CTestSuite sample_main;
+   CTestSuite tst;
 
-   //sample_main_PlayBin();
-   sample_main.SolveLinear();
-   sample_main.SeparatedSolve();
-   //sample_main_JK_Solve();
+   //tst_PlayBin();
+   tst.SolveLinear();
+   tst.SeparatedSolve();
+   //tst_JK_Solve();
    TestHeap();
    WaitKey(_verboseDDS);
 }

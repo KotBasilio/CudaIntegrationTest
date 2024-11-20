@@ -15,7 +15,7 @@
 
 
 int SolveSameBoard(
-  ThreadData * thrp,
+  int thrId,
   const deal& dl,
   futureTricks * futp,
   const int hint);

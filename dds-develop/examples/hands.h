@@ -9,7 +9,7 @@
 
 typedef unsigned int uint;
 
-// General initialization of three hands to be used in examples.
+// General initialization of three boards to be used in examples.
 
 extern int trump[3];
 extern int first[3];
@@ -18,7 +18,9 @@ extern int vul[3];
 
 extern char PBN[3][80];
 
-extern unsigned int holdings[3][4][4];
+constexpr int TEST_SOLVE_SAME = 4;
+constexpr int TEST_HOLDINGS_COUNT = 3 + TEST_SOLVE_SAME;
+extern unsigned int holdings[TEST_HOLDINGS_COUNT][4][4];
 
 extern int playNo[3];
 
@@ -45,8 +47,6 @@ void PrintBinPlay(playTraceBin * play, solvedPlay * solved);
 void PrintPBNPlay(playTracePBN * play, solvedPlay * solved);
 
 
-uint CalcNSLineHCP(const deal& dl, uint &ctrl);
-
 int ConvertPBN(char * dealBuff,
   unsigned int remainCards[DDS_HANDS][DDS_SUITS]);
 
@@ -59,4 +59,9 @@ int IsACard(char cardChar);
 #define DDS_OPLEAD_LINES 15
 #define DDS_STATS_LINE 0
 #define DDS_STATS_OFFSET (2 * DDS_HAND_OFFSET)
+
+#define NORTH    0
+#define EAST     1
+#define SOUTH    2
+#define WEST     3
 

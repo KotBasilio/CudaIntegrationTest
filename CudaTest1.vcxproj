@@ -82,7 +82,7 @@
     <CudaCompile Include="src\kernels.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dds-develop\examples\hands.cu" />
+    <ClCompile Include="dds-develop\examples\hands.cpp" />
     <ClCompile Include="dds-develop\src\ABsearch.cu" />
     <ClCompile Include="dds-develop\src\ABstats.cu" />
     <ClCompile Include="dds-develop\src\Init.cu" />

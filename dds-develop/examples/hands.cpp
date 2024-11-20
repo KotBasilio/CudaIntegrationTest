@@ -28,11 +28,6 @@
 #define CLUBS    3
 #define NOTRUMP  4
 
-#define NORTH    0
-#define EAST     1
-#define SOUTH    2
-#define WEST     3
-
 #define VUL_NONE 0
 #define VUL_BOTH 1
 #define VUL_NS   2
@@ -76,7 +71,7 @@ int first [3] = { NORTH   , EAST   , SOUTH    };
 int dealer[3] = { NORTH   , EAST   , NORTH    };
 int vul   [3] = { VUL_NONE, VUL_NS , VUL_NONE };
 
-char PBN[3][80] = {
+char __PBN[3][80] = {
 "N:QJ6.K652.J85.T98 873.J97.AT764.Q4 K5.T83.KQ9.A7652 AT942.AQ4.32.KJ3",
 "E:QJT5432.T.6.QJ82 .J97543.K7532.94 87.A62.QJT4.AT75 AK96.KQ8.A98.K63",
 "N:73.QJT.AQ54.T752 QT6.876.KJ9.AQ84 5.A95432.7632.K6 AKJ9842.K.T8.J93"
@@ -84,25 +79,45 @@ char PBN[3][80] = {
 
 // The same hands in binary.  The second index is suit, the
 // third index is hand.
-unsigned int holdings[3][4][4] =
+unsigned int holdings[TEST_HOLDINGS_COUNT][4][4] =
 {
   { // North       East     South          West
     { RQ|RJ|R6, R8|R7|R3, RK|R5, RA|RT|R9|R4|R2 } , // spades
     { RK|R6|R5|R2, RJ|R9|R7, RT|R8|R3, RA|RQ|R4 } , // hearts
     { RJ|R8|R5, RA|RT|R7|R6|R4, RK|RQ|R9, R3|R2 } , // diamonds
-    { RT|R9|R8, RQ|R4, RA|R7|R6|R5|R2, RK|RJ|R3 }}, // clubs
-  {
+    { RT|R9|R8, RQ|R4, RA|R7|R6|R5|R2, RK|RJ|R3 } , // clubs
+  }, {
     { RA|RK|R9|R6, RQ|RJ|RT|R5|R4|R3|R2, 0, R8|R7},
     { RK|RQ|R8, RT, RJ|R9|R7|R5|R4|R3, RA|R6|R2 },
     { RA|R9|R8, R6, RK|R7|R5|R3|R2, RQ|RJ|RT|R4 },
-    { RK|R6|R3, RQ|RJ|R8|R2, R9|R4, RA|RT|R7|R5 }},
-  {
+    { RK|R6|R3, RQ|RJ|R8|R2, R9|R4, RA|RT|R7|R5 }
+  }, {
     { R7|R3, RQ|RT|R6, R5, RA|RK|RJ|R9|R8|R4|R2 },
     { RQ|RJ|RT, R8|R7|R6, RA|R9|R5|R4|R3|R2, RK },
     { RA|RQ|R5|R4, RK|RJ|R9, R7|R6|R3|R2, RT|R8 },
-    { RT|R7|R5|R2, RA|RQ|R8|R4, RK|R6, RJ|R9|R3 }}
+    { RT|R7|R5|R2, RA|RQ|R8|R4, RK|R6, RJ|R9|R3 }
+  }, {
+      {0x00000000, 0x00001294, 0x00006400, 0x00000968},
+      {0x00005320, 0x00000080, 0x00000818, 0x00002444},
+      {0x00000820, 0x00004380, 0x00002444, 0x00001018},
+      {0x000069c0, 0x0000002c, 0x00001410, 0x00000200},
+  }, {
+      {0x00000000, 0x00000968, 0x00006400, 0x00001294},
+      {0x00005320, 0x00002444, 0x00000818, 0x00000080},
+      {0x00000820, 0x00001018, 0x00002444, 0x00004380},
+      {0x000069c0, 0x00000200, 0x00001410, 0x0000002c},
+  }, {
+      {0x00000000, 0x00001290, 0x00006400, 0x0000096c},
+      {0x00005320, 0x00000090, 0x0000080c, 0x00002440},
+      {0x00000820, 0x00004380, 0x00002444, 0x00001018},
+      {0x000069c0, 0x0000002c, 0x00001410, 0x00000200},
+  }, {
+      {0x00000000, 0x00000434, 0x00006080, 0x00001b48},
+      {0x00005320, 0x00002088, 0x00000c04, 0x00000050},
+      {0x00000820, 0x00002508, 0x00001214, 0x000040c0},
+      {0x000069c0, 0x0000000c, 0x00001210, 0x00000420},
+  }
 };
-
 
 // Number of cards played during the played before claim
 int playNo[3] = { 45, 52, 12 };
@@ -163,31 +178,46 @@ int cardsSoln2[3] = { 6, 3, 4 };
 int cardsSoln3[3] = { 9, 7, 8 };
 
 // Suits of cards returned. Padded with zeroes.
-int cardsSuits[3][13] = {
-  { 2, 2, 2, 3, 0, 0, 1, 1, 1,    0, 0, 0, 0 },
-  { 3, 3, 3, 1, 2, 0, 0,    0, 0, 0, 0, 0, 0 },
-  { 1, 2, 2, 0, 1, 1, 3, 3,    0, 0, 0, 0, 0 }
+int cardsSuits[TEST_HOLDINGS_COUNT + TEST_SOLVE_SAME][13] = {
+   { 2, 2, 2, 3, 0, 0, 1, 1, 1,    0, 0, 0, 0 },
+   { 3, 3, 3, 1, 2, 0, 0,    0, 0, 0, 0, 0, 0 },
+   { 1, 2, 2, 0, 1, 1, 3, 3,    0, 0, 0, 0, 0 },
+   // sol=1 and 3/3
+   { 2},
+   { 2},
+   { 2},
+   { 2},
+   // sol=1 and 0/0 -- allowing to test SolveSameBoard
+   { 3},
+   { 3},
+   { 3},
+   { 3},
 };
-
 // Ranks for cards returned (2 .. 14).  Padded with zeroes.
-int cardsRanks[3][13] = {
-  { 5, 8,11,10, 6,12, 2, 6,13,    0, 0, 0, 0 },
-  { 2, 8,12,10, 6,12, 5,    0, 0, 0, 0, 0, 0 },
-  {14, 3, 7, 5, 5, 9, 6,13,    0, 0, 0, 0, 0 }
+int cardsRanks[TEST_HOLDINGS_COUNT+TEST_SOLVE_SAME][13] = {
+   { 5, 8,11,10, 6,12, 2, 6,13,    0, 0, 0, 0 },
+   { 2, 8,12,10, 6,12, 5,    0, 0, 0, 0, 0, 0 },
+   {14, 3, 7, 5, 5, 9, 6,13,    0, 0, 0, 0, 0 },
+   { 4  }, { 14 }, { 4  }, { 7 },
+   { 14 }, { 14 }, { 14 }, { 14},
 };
 
 // Scores for cards returned.
-int cardsScores[3][13] = {
-  { 5, 5, 5, 5, 5, 5, 4, 4, 4,    0, 0, 0, 0 },
-  { 4, 4, 4, 3, 3, 3, 2,    0, 0, 0, 0, 0, 0 },
-  { 3, 3, 3, 3, 2, 2, 1, 1,    0, 0, 0, 0, 0 }
+int cardsScores[TEST_HOLDINGS_COUNT+TEST_SOLVE_SAME][13] = {
+   { 5, 5, 5, 5, 5, 5, 4, 4, 4,    0, 0, 0, 0 },
+   { 4, 4, 4, 3, 3, 3, 2,    0, 0, 0, 0, 0, 0 },
+   { 3, 3, 3, 3, 2, 2, 1, 1,    0, 0, 0, 0, 0 },
+   { 1}, { 2}, { 1}, { 3},
+   { 6}, { 6}, { 6}, { 6},
 };
 
 // Equals for cards returned, i.e. equivalent cards (rank vectors).
-int cardsEquals[3][13] = {
-  { 0,   0,   0, 768,   0,2048,   0,  32,   0,    0,0,0,0},
-  { 0,   0,2048,   0,   0,3072,  28,          0,0,0,0,0,0},
-  { 0,   4,  64,   0,  28,   0,   0,   0,       0,0,0,0,0}
+int cardsEquals[TEST_HOLDINGS_COUNT+TEST_SOLVE_SAME][13] = {
+   { 0,   0,   0, 768,   0,2048,   0,  32,   0,    0,0,0,0},
+   { 0,   0,2048,   0,   0,3072,  28,          0,0,0,0,0,0},
+   { 0,   4,  64,   0,  28,   0,   0,   0,       0,0,0,0,0},
+   { 8}, { 0}, { 8}, { 64},
+   { 8192}, { 8192}, { 8192}, { 8192},
 };
 
 // Double dummy table.  The order here is:
@@ -258,14 +288,25 @@ char dealerContract[3][4][10] = {
 
 bool CompareFut(futureTricks * fut, int handno, int solutions)
 {
-  if (solutions == 2)
-  {
-    if (fut->cards != cardsSoln2[handno])
-      return false;
-  }
-  else if (fut->cards != cardsSoln3[handno])
-    return false;
+   // match num
+   switch (solutions) {
+      case 1:
+         if (fut->cards != 1)
+            return false;
+         break;
 
+      case 2:
+         if (fut->cards != cardsSoln2[handno])
+            return false;
+         break;
+
+      case 3:
+         if (fut->cards != cardsSoln3[handno])
+            return false;
+         break;
+   }
+
+   // match all other
   for (int i = 0; i < fut->cards; i++)
   {
     if (fut->suit [i] != cardsSuits [handno][i]) return false;

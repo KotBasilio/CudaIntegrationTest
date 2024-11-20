@@ -590,11 +590,16 @@ SOLVER_DONE:
 
 
 int SolveSameBoard(
-  ThreadData * thrp,
+  int thrId,
   const deal& dl,
   futureTricks * futp,
   const int hint)
 {
+   // get to thread data
+   if (! sysdep.ThreadOK(thrId))
+      return RETURN_THREAD_INDEX;
+   ThreadData* thrp = memory.GetPtr(thrId);
+
   // Specialized function for SolveChunkDDtable for repeat solves.
   // No further parameter checks! This function makes heavy reuse
   // of parameters that are already stored in various places. It
