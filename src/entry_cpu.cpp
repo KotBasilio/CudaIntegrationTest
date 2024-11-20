@@ -6,6 +6,7 @@ extern bool CudaClose();
 void TestHeap(void);
 
 extern void DoSelfTests();
+void NoticeErrorDDS(int res, bool& isAllright);
 #define PLATFORM_GETCH _getch
 
 void WaitKey(bool yes = true)

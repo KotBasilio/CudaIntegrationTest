@@ -8,16 +8,15 @@
 #include "../dds-develop/examples/hands.h"
 
 void WaitKey(bool yes);
-void TestCudaWays();
 
-static bool _verboseDDS = false;
 //#define VERBOSE_DDS_TEST
-
 #ifdef VERBOSE_DDS_TEST
    #define VERBOSE  printf
 #else
    #define VERBOSE(...)
 #endif
+static bool _verboseDDS = false;
+const int MAX_THREADS_IN_TEST = 12;
 
 
 void IncInCPP(int* dest)
@@ -188,14 +187,38 @@ static void qaPrintHand(char title[], const deal& dl, char tail[])
    VERBOSE(tail);
 }
 
-void SetResources();
+void FillDeal(deal& dl, int handno)
+{
+   dl.trump = trump[handno];
+   dl.first = first[handno];
+
+   dl.currentTrickSuit[0] = 0;
+   dl.currentTrickSuit[1] = 0;
+   dl.currentTrickSuit[2] = 0;
+
+   dl.currentTrickRank[0] = 0;
+   dl.currentTrickRank[1] = 0;
+   dl.currentTrickRank[2] = 0;
+
+   for (int h = 0; h < DDS_HANDS; h++)
+      for (int s = 0; s < DDS_SUITS; s++)
+         dl.remainCards[h][s] = holdings[handno][s][h];
+}
+
+void NoticeErrorDDS(int res, bool& isAllright)
+{
+   if (res != RETURN_NO_FAULT) {
+      char line[80];
+      ErrorMessage(res, line);
+      printf("DDS error: %s\n", line);
+      isAllright = false;
+   }
+}
 
 void sample_main_SolveBoard()
 {
-   VERBOSE("Testing SolveBoard()\n");
+   printf("Testing SolveBoard()");
    bool isAllright = true;
-
-   SetResources();
 
    deal dl;
    futureTricks fut2, // solutions == 2
@@ -210,45 +233,26 @@ void sample_main_SolveBoard()
    bool match2;
    bool match3;
 
-   for (int threadIndex = 11; threadIndex >= 0; threadIndex--) {
+   for (int threadIndex = 3; threadIndex >= 0; threadIndex--) {
       for (int handno = 0; handno < 3; handno++) {
-         dl.trump = trump[handno];
-         dl.first = first[handno];
-
-         dl.currentTrickSuit[0] = 0;
-         dl.currentTrickSuit[1] = 0;
-         dl.currentTrickSuit[2] = 0;
-
-         dl.currentTrickRank[0] = 0;
-         dl.currentTrickRank[1] = 0;
-         dl.currentTrickRank[2] = 0;
-
-         for (int h = 0; h < DDS_HANDS; h++)
-            for (int s = 0; s < DDS_SUITS; s++)
-               dl.remainCards[h][s] = holdings[handno][s][h];
+         FillDeal(dl, handno);
 
          // solve with auto-control vs expected results
          target = -1;
          solutions = 3;
          mode = 0;
          res = SolveBoard(dl, target, solutions, mode, &fut3, threadIndex);
-         if (res != RETURN_NO_FAULT) {
-            ErrorMessage(res, line);
-            printf("DDS error: %s\n", line);
-         }
+         NoticeErrorDDS(res, isAllright);
          match3 = CompareFut(&fut3, handno, solutions);
 
          // solve with auto-control vs expected results
          solutions = 2;
          res = SolveBoard(dl, target, solutions, mode, &fut2, threadIndex);
-         if (res != RETURN_NO_FAULT) {
-            ErrorMessage(res, line);
-            printf("DDS error: %s\n", line);
-         }
+         NoticeErrorDDS(res, isAllright);
          match2 = CompareFut(&fut2, handno, solutions);
 
          // out
-         VERBOSE("--------------\nSolveBoard, thrid=%d hand %d:\n", threadIndex, handno + 1);
+         VERBOSE("--------------\nSolveBoard, thrid=%d hand %d:\n", threadIndex, handno);
          sprintf(line, "solutions == 3 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
          PrintFut(line, &fut3);
          sprintf(line, "solutions == 2 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
@@ -266,9 +270,79 @@ void sample_main_SolveBoard()
    }
 
    printf("\n==============================\n"
-            "DDS solve one-threaded result: %s\n"
+            "One-threaded DDS solve test: %s\n"
             "==============================\n",
             (isAllright ? "SUCCESS" : "FAIL"));
+}
+
+// separate solving and testing
+void sample_main_SeparatedSolve()
+{
+   printf("Testing Separated()");
+   bool isAllright = true;
+
+   deal dl;
+   futureTricks fut2[MAX_THREADS_IN_TEST][3]; // solutions == 2
+   futureTricks fut3[MAX_THREADS_IN_TEST][3]; // solutions == 3
+
+   int target = -1;
+   int solutions;
+   int mode = 0;
+   int res = RETURN_NO_FAULT;
+   char tail[60];
+   int threadBegin = MAX_THREADS_IN_TEST - 1;
+
+   // solve & store
+   for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
+      for (int i = 0; i < 3; i++) {
+         int handno = (i + threadIndex) % 3; // mix up the order
+         FillDeal(dl, handno);
+         auto out3 = &fut3[threadIndex][handno];
+         auto out2 = &fut2[threadIndex][handno];
+
+         solutions = 3;
+         res = SolveBoard(dl, target, solutions, mode, out3, threadIndex);
+         NoticeErrorDDS(res, isAllright);
+
+         solutions = 2;
+         res = SolveBoard(dl, target, solutions, mode, out2, threadIndex);
+         NoticeErrorDDS(res, isAllright);
+      }
+      printf(".");
+   }
+
+   // control
+   char line[80];
+   bool match2;
+   bool match3;
+   for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
+      for (int handno = 0; handno < 3; handno++) {
+         auto cmp3 = &fut3[threadIndex][handno];
+         auto cmp2 = &fut2[threadIndex][handno];
+         FillDeal(dl, handno);
+         match3 = CompareFut(cmp3, handno, 3);
+         match2 = CompareFut(cmp2, handno, 2);
+
+         VERBOSE("--------------\nSolveBoard, thrid=%d hand %d:\n", threadIndex, handno);
+         sprintf(line, "solutions == 3 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
+         PrintFut(line, cmp3);
+         sprintf(line, "solutions == 2 leads %s, trumps: %s\n", haPlayerToStr(dl.first), haTrumpToStr(dl.trump));
+         PrintFut(line, cmp2);
+         sprintf(tail,
+            "Checking: sol=3 %s, sol=2 %s\n",
+            (match3 ? "OK" : "ERROR"),
+            (match2 ? "OK" : "ERROR"));
+         sprintf(line, "The board:\n");
+         qaPrintHand(line, dl, tail);
+         isAllright = isAllright && match2 && match3;
+         WaitKey(_verboseDDS);
+      }
+   }
+
+   printf("\n==============================\n"
+      "Separated DDS solve test: %s\n"
+      "==============================\n",
+      (isAllright ? "SUCCESS" : "FAIL"));
 }
 
 void DoSelfTests()
@@ -276,10 +350,11 @@ void DoSelfTests()
    #ifdef VERBOSE_DDS_TEST
       _verboseDDS = true;
    #endif
-                                             
+   SetResources();
+
    //sample_main_PlayBin();
    sample_main_SolveBoard();
-   //sample_main_SolveBoard_S1();
+   sample_main_SeparatedSolve();
    //sample_main_JK_Solve();
    TestHeap();
    WaitKey(_verboseDDS);
