@@ -16,6 +16,8 @@ void WaitKey(bool yes = true)
    }
 }
 
+//#pragma warning("Here can be whatever main")
+
 void TestCudaWays()
 {
    const int arraySize = 20;

@@ -5,44 +5,44 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\selftest.cpp" />
-    <ClCompile Include="dds-develop\examples\hands.cpp">
+    <ClCompile Include="dds-develop\examples\hands.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\Memory.cpp">
+    <ClCompile Include="dds-develop\src\Memory.cu">
       <Filter>dds</Filter>
     </ClCompile>
     <ClCompile Include="src\entry_cpu.cpp" />
-    <ClCompile Include="dds-develop\src\TransTableL.cpp">
+    <ClCompile Include="dds-develop\src\TransTableL.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\Moves.cpp">
+    <ClCompile Include="dds-develop\src\Moves.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\Scheduler.cpp">
+    <ClCompile Include="dds-develop\src\Scheduler.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\ThreadMgr.cpp">
+    <ClCompile Include="dds-develop\src\ThreadMgr.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\ABsearch.cpp">
+    <ClCompile Include="dds-develop\src\ABsearch.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\QuickTricks.cpp">
+    <ClCompile Include="dds-develop\src\QuickTricks.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\LaterTricks.cpp">
+    <ClCompile Include="dds-develop\src\LaterTricks.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\ABstats.cpp">
+    <ClCompile Include="dds-develop\src\ABstats.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\TimerList.cpp">
+    <ClCompile Include="dds-develop\src\TimerList.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\SolverIF.cpp">
+    <ClCompile Include="dds-develop\src\SolverIF.cu">
       <Filter>dds</Filter>
     </ClCompile>
-    <ClCompile Include="dds-develop\src\Init.cpp">
+    <ClCompile Include="dds-develop\src\Init.cu">
       <Filter>dds</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,64 +50,67 @@
     <Filter Include="dds">
       <UniqueIdentifier>{209f9279-d35c-4fd4-a984-490f521e4f38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dds\headers">
+      <UniqueIdentifier>{4b5dcc44-fae9-41b8-b7dc-a022151f09e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dds-develop\include\dll.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\examples\hands.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\Memory.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\TransTable.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\TransTableL.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\dds.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\Moves.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\Scheduler.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\System.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\ThreadMgr.h">
-      <Filter>dds</Filter>
-    </ClInclude>
     <ClInclude Include="dds-develop\src\ABsearch.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\QuickTricks.h">
-      <Filter>dds</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\LaterTricks.h">
-      <Filter>dds</Filter>
+      <Filter>dds\headers</Filter>
     </ClInclude>
     <ClInclude Include="dds-develop\src\ABstats.h">
-      <Filter>dds</Filter>
+      <Filter>dds\headers</Filter>
     </ClInclude>
-    <ClInclude Include="dds-develop\src\TimerList.h">
-      <Filter>dds</Filter>
+    <ClInclude Include="dds-develop\src\dds.h">
+      <Filter>dds\headers</Filter>
     </ClInclude>
-    <ClInclude Include="dds-develop\src\TimerGroup.h">
-      <Filter>dds</Filter>
+    <ClInclude Include="dds-develop\include\dll.h">
+      <Filter>dds\headers</Filter>
     </ClInclude>
-    <ClInclude Include="dds-develop\src\SolverIF.h">
-      <Filter>dds</Filter>
+    <ClInclude Include="dds-develop\examples\hands.h">
+      <Filter>dds\headers</Filter>
     </ClInclude>
     <ClInclude Include="dds-develop\src\Init.h">
-      <Filter>dds</Filter>
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\LaterTricks.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\Memory.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\Moves.h">
+      <Filter>dds\headers</Filter>
     </ClInclude>
     <ClInclude Include="dds-develop\include\portab.h">
-      <Filter>dds</Filter>
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\QuickTricks.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\Scheduler.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\System.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\SolverIF.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\TimerGroup.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\ThreadMgr.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\TimerList.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\TransTable.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="dds-develop\src\TransTableL.h">
+      <Filter>dds\headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
