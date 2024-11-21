@@ -80,24 +80,23 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="dds-develop\src\ABsearch.cu" />
+    <CudaCompile Include="dds-develop\src\Init.cu" />
+    <CudaCompile Include="dds-develop\src\LaterTricks.cu" />
+    <CudaCompile Include="dds-develop\src\Memory.cu" />
+    <CudaCompile Include="dds-develop\src\Moves.cu" />
+    <CudaCompile Include="dds-develop\src\QuickTricks.cu" />
+    <CudaCompile Include="dds-develop\src\Scheduler.cu" />
+    <CudaCompile Include="dds-develop\src\SolverIF.cu" />
+    <CudaCompile Include="dds-develop\src\ThreadMgr.cu" />
+    <CudaCompile Include="dds-develop\src\TimerList.cu" />
+    <CudaCompile Include="dds-develop\src\TransTableL.cu" />
     <CudaCompile Include="src\kernels.cu" />
+    <CudaCompile Include="src\TestCarp.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dds-develop\examples\hands.cpp" />
-    <ClCompile Include="dds-develop\src\ABsearch.cu" />
-    <ClCompile Include="dds-develop\src\ABstats.cu" />
-    <ClCompile Include="dds-develop\src\Init.cu" />
-    <ClCompile Include="dds-develop\src\LaterTricks.cu" />
-    <ClCompile Include="dds-develop\src\Memory.cu" />
-    <ClCompile Include="dds-develop\src\Moves.cu" />
-    <ClCompile Include="dds-develop\src\QuickTricks.cu" />
-    <ClCompile Include="dds-develop\src\Scheduler.cu" />
-    <ClCompile Include="dds-develop\src\SolverIF.cu" />
-    <ClCompile Include="dds-develop\src\ThreadMgr.cu" />
-    <ClCompile Include="dds-develop\src\TimerList.cu" />
-    <ClCompile Include="dds-develop\src\TransTableL.cu" />
     <ClCompile Include="src\entry_cpu.cpp" />
-    <ClCompile Include="src\TestCarp.cu" />
     <ClCompile Include="src\TestSuite.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -105,7 +104,6 @@
     <ClInclude Include="dds-develop\include\dll.h" />
     <ClInclude Include="dds-develop\include\portab.h" />
     <ClInclude Include="dds-develop\src\ABsearch.h" />
-    <ClInclude Include="dds-develop\src\ABstats.h" />
     <ClInclude Include="dds-develop\src\dds.h" />
     <ClInclude Include="dds-develop\src\Init.h" />
     <ClInclude Include="dds-develop\src\LaterTricks.h" />

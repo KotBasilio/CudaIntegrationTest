@@ -5,6 +5,8 @@
    2014-2018 by Bo Haglund & Soren Hein.
 
    See LICENSE and README.
+
+   2024 GPU acceleration by Serge Mironov
 */
 
 #include <iostream>
@@ -16,11 +18,12 @@
 #include "QuickTricks.h"
 #include "LaterTricks.h"
 #include "ABsearch.h"
-#include "ABstats.h"
 #include "TimerList.h"
-//#include "dump.h"
-//#include "debug.h"
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
+#define AB_COUNT(a, b, c) 
 
 void Make3Simple(
   pos * posPoint,
@@ -120,9 +123,6 @@ bool ABsearch(
           posPoint->winRanks[depth - 1][ss];
 
       thrp->bestMove[depth] = * mply;
-#ifdef DDS_MOVES
-      thrp->moves.RegisterHit(tricks, 0);
-#endif
       goto ABexit;
     }
     for (int ss = 0; ss < DDS_SUITS; ss++)
@@ -361,9 +361,6 @@ bool ABsearch0(
           posPoint->winRanks[depth - 1][ss];
 
       thrp->bestMove[depth] = * mply;
-#ifdef DDS_MOVES
-      thrp->moves.RegisterHit(tricks, 0);
-#endif
       goto ABexit;
     }
     for (int ss = 0; ss < DDS_SUITS; ss++)
@@ -496,9 +493,6 @@ bool ABsearch1(
           posPoint->winRanks[depth - 1][ss];
 
       thrp->bestMove[depth] = * mply;
-#ifdef DDS_MOVES
-      thrp->moves.RegisterHit(tricks, 1);
-#endif
       goto ABexit;
     }
 
@@ -569,9 +563,6 @@ bool ABsearch2(
           posPoint->winRanks[depth - 1][ss];
 
       thrp->bestMove[depth] = * mply;
-#ifdef DDS_MOVES
-      thrp->moves.RegisterHit(tricks, 2);
-#endif
       goto ABexit;
     }
 
@@ -653,9 +644,6 @@ bool ABsearch3(
                                           posPoint->winRanks[depth - 1][ss] | makeWinRank[ss]);
 
       thrp->bestMove[depth] = * mply;
-#ifdef DDS_MOVES
-      thrp->moves.RegisterHit(tricks, 3);
-#endif
       goto ABexit;
     }
     for (int ss = 0; ss < DDS_SUITS; ss++)

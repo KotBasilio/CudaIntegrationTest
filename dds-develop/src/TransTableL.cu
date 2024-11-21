@@ -353,7 +353,7 @@ void TransTableL::ReleaseTT()
 
 void TransTableL::ResetMemory(const TTresetReason reason)
 {
-  UNUSED(reason);
+  int unused = reason; unused++;
   if (poolp == nullptr)
     return;
 

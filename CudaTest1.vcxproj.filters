@@ -1,42 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="dds-develop\src\Memory.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\TransTableL.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\Moves.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\Scheduler.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\ThreadMgr.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\ABsearch.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\QuickTricks.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\LaterTricks.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\ABstats.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\TimerList.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\SolverIF.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
-    <ClCompile Include="dds-develop\src\Init.cu">
-      <Filter>dds</Filter>
-    </ClCompile>
     <ClCompile Include="dds-develop\examples\hands.cpp">
       <Filter>test</Filter>
     </ClCompile>
@@ -44,9 +8,6 @@
       <Filter>test</Filter>
     </ClCompile>
     <ClCompile Include="src\TestSuite.cpp">
-      <Filter>test</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TestCarp.cu">
       <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>
@@ -63,9 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dds-develop\src\ABsearch.h">
-      <Filter>dds\headers</Filter>
-    </ClInclude>
-    <ClInclude Include="dds-develop\src\ABstats.h">
       <Filter>dds\headers</Filter>
     </ClInclude>
     <ClInclude Include="dds-develop\src\dds.h">
@@ -126,6 +84,42 @@
   <ItemGroup>
     <CudaCompile Include="src\kernels.cu">
       <Filter>test</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\TestCarp.cu">
+      <Filter>test</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\ABsearch.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\Init.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\LaterTricks.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\Memory.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\Moves.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\QuickTricks.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\Scheduler.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\SolverIF.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\ThreadMgr.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\TimerList.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
+    <CudaCompile Include="dds-develop\src\TransTableL.cu">
+      <Filter>dds</Filter>
     </CudaCompile>
   </ItemGroup>
 </Project>

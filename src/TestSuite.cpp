@@ -381,8 +381,8 @@ void DoSelfTests()
 {
    auto tst = new CTestSuite;
 
-   //tst->SolveLinear();
-   //tst->SeparatedSolve();
+   tst->SolveLinear();
+   tst->SeparatedSolve();
    tst->CarpenterSolve();
    //tst_JK_Solve();
 

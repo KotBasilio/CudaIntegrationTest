@@ -568,14 +568,6 @@ SOLVER_STATS:
   thrp->transTable->PrintResetStats(thrp->fileTTstats.GetStream());
 #endif
 
-#ifdef DDS_MOVES
-  thrp->moves.PrintTrickStats(thrp->fileMoves.GetStream());
-#ifdef DDS_MOVES_DETAILS
-  thrp->moves.PrintTrickDetails(thrp->fileMoves.GetStream());
-#endif
-  thrp->moves.PrintFunctionStats(thrp->fileMoves.GetStream());
-#endif
-
 SOLVER_DONE:
 
   thrp->memUsed = thrp->transTable->MemoryInUse() + ThreadMemoryUsed();
@@ -676,14 +668,6 @@ int SolveSameBoard(
   // These are for the small TT -- empty if not.
   thrp->transTable->PrintNodeStats(thrp->fileTTstats.GetStream());
   thrp->transTable->PrintResetStats(thrp->fileTTstats.GetStream());
-#endif
-
-#ifdef DDS_MOVES
-  thrp->moves.PrintTrickStats(thrp->fileMoves.GetStream());
-#ifdef DDS_MOVES_DETAILS
-  thrp->moves.PrintTrickDetails(thrp->fileMoves.GetStream());
-#endif
-  thrp->moves.PrintFunctionStats(thrp->fileMoves.GetStream());
 #endif
 
   futp->nodes = thrp->trickNodes;
@@ -824,14 +808,6 @@ int AnalyseLaterBoard(
   // These are for the small TT -- empty if not.
   thrp->transTable->PrintNodeStats(thrp->fileTTstats.GetStream());
   thrp->transTable->PrintResetStats(thrp->fileTTstats.GetStream());
-#endif
-
-#ifdef DDS_MOVES
-  thrp->moves.PrintTrickStats(thrp->fileMoves.GetStream());
-#ifdef DDS_MOVES_DETAILS
-  thrp->moves.PrintTrickDetails(thrp->fileMoves.GetStream());
-#endif
-  thrp->moves.PrintFunctionStats(thrp->fileMoves.GetStream());
 #endif
 
 #ifdef DDS_MEMORY_LEAKS_WIN32

@@ -14,29 +14,6 @@
 #include "Moves.h"
 //#include "debug.h"
 
-#ifdef DDS_MOVES
-  #define MG_REGISTER(a, b) lastCall[currTrick][b] = a
-#else
-  #define MG_REGISTER(a, b) 1;
-#endif
-
-
-const MGtype RegisterList[16] =
-{
-  MG_NT0, MG_TRUMP0,
-  MG_SIZE, MG_SIZE, // Unused
-
-  MG_NT_NOTVOID1, MG_TRUMP_NOTVOID1,
-  MG_NT_VOID1, MG_TRUMP_VOID1,
-
-  MG_NT_NOTVOID2, MG_TRUMP_NOTVOID2,
-  MG_NT_VOID2, MG_TRUMP_VOID2,
-
-  MG_COMB_NOTVOID3, MG_COMB_NOTVOID3,
-  MG_NT_VOID3, MG_TRUMP_VOID3
-};
-
-
 Moves::Moves()
 {
   funcName[MG_NT0] = "NT0";
@@ -209,13 +186,6 @@ int Moves::MoveGen0(
       Moves::WeightAllocNT0(tpos, bestMove, bestMoveTT, thrp_rel);
   }
 
-#ifdef DDS_MOVES
-  if (ftest)
-    MG_REGISTER(MG_TRUMP0, 0);
-  else
-    MG_REGISTER(MG_NT0, 0);
-#endif
-
   list.current = 0;
   list.last = numMoves - 1;
   if (numMoves != 1)
@@ -275,9 +245,6 @@ int Moves::MoveGen123(
     }
 
     findex = 4 * handRel + ftest;
-#ifdef DDS_MOVES
-    MG_REGISTER(RegisterList[findex], handRel);
-#endif
 
     list.current = 0;
     list.last = numMoves - 1;
@@ -292,9 +259,6 @@ int Moves::MoveGen123(
 
   findex = 4 * handRel + ftest + 2;
 
-#ifdef DDS_MOVES
-  MG_REGISTER(RegisterList[findex], handRel);
-#endif
   WeightFnc = WeightList[findex];
 
   for (suit = 0; suit < DDS_SUITS; suit++)
@@ -1543,7 +1507,7 @@ void Moves::WeightAllocCombinedNotvoid3(const pos& tpos)
         mply[k].weight = -mply[k].rank;
     }
   }
-  UNUSED(tpos);
+  int unused = tpos.first[0]; unused++;
 }
 
 
