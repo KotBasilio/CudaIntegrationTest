@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6A907D1A-F60C-455D-9953-1130D0214BD9}</ProjectGuid>
     <RootNamespace>CudaTest1</RootNamespace>
+    <ProjectName>CarpTest</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -96,7 +97,8 @@
     <ClCompile Include="dds-develop\src\TimerList.cu" />
     <ClCompile Include="dds-develop\src\TransTableL.cu" />
     <ClCompile Include="src\entry_cpu.cpp" />
-    <ClCompile Include="src\selftest.cpp" />
+    <ClCompile Include="src\TestCarp.cu" />
+    <ClCompile Include="src\TestSuite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dds-develop\examples\hands.h" />
@@ -118,6 +120,7 @@
     <ClInclude Include="dds-develop\src\TimerList.h" />
     <ClInclude Include="dds-develop\src\TransTable.h" />
     <ClInclude Include="dds-develop\src\TransTableL.h" />
+    <ClInclude Include="src\TestSuite.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

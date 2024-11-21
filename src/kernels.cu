@@ -316,5 +316,16 @@ bool CudaWork(int* c, const int* a, const int* b, unsigned int size)
    return true;
 }
 
+__global__ void kerCarpTest(void)
+{
+   int i = threadIdx.x;
+}
+
+void CarpTest()
+{
+   unsigned int size = 5;
+   kerCarpTest<<<1, size>>>();
+}
+
 #endif // cudacc
 

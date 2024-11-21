@@ -339,4 +339,6 @@ int SolveSameBoard(
 
 void  ErrorMessage(int code, char line[80]);
 
+void  CarpTest();
+
 #endif

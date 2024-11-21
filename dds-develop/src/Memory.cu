@@ -1,10 +1,12 @@
 ﻿/*
-   DDS, a bridge double dummy solver.
+   DDS, a bridge double dummy solver. (Memory.cpp)
 
    Copyright (C) 2006-2014 by Bo Haglund /
    2014-2018 by Bo Haglund & Soren Hein.
 
    See LICENSE and README.
+
+   2024 GPU acceleration by Serge Mironov
 */
 
 
@@ -168,4 +170,21 @@ bool System::ThreadOK(const int thrId) const
 {
    return (0 <= thrId && thrId < numThreads);
 }
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
+#define TMMP_MAC __global__
+
+//__global__ void kerCarpTest(void)
+//{
+//   int i = threadIdx.x;
+//}
+//
+//void CarpTest()
+//{
+//   unsigned int size = 5;
+//   kerCarpTest<<<1, size>>>();
+//}
+
 
