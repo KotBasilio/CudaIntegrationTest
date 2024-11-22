@@ -297,6 +297,40 @@ void CTestSuite::SolveLinear()
             (isAllright ? "SUCCESS" : "FAIL"));
 }
 
+void CTestSuite::ControlSolvedBoards(bool isAllright)
+{
+   int threadBegin = MAX_THREADS_IN_TEST - 1;
+   bool match2;
+   bool match3;
+   for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
+      deal dl;
+      int handno = 0;
+      for (; handno < 3; handno++) {
+         auto cmp3 = &mFut3[threadIndex][handno];
+         auto cmp2 = &mFut2[threadIndex][handno];
+         match3 = CompareFut(cmp3, handno, 3);
+         match2 = CompareFut(cmp2, handno, 2);
+
+         VERBOSE("--------------\nSeparated Solve, thrid=%d hand %d:\n", threadIndex, handno);
+         FillDeal(dl, handno);
+         VerboseLogOn23(dl, cmp3, cmp2, match3, match2);
+         isAllright = isAllright && match2 && match3;
+         WaitKey(_verboseDDS);
+      }
+      int solutions = 1;
+      for (int idx = 0; handno < TEST_HOLDINGS_COUNT; handno++, idx++) {
+         FillDeal(dl, handno);
+         auto cmp1A = &mFut1[threadIndex][idx];
+         auto cmp1B = &mFut1[threadIndex][idx + TEST_SOLVE_SAME];
+         isAllright = isAllright && CompareFut(cmp1A, handno, solutions);
+         isAllright = isAllright && CompareFut(cmp1B, handno + TEST_SOLVE_SAME, solutions);
+      }
+   }
+
+   // out
+   printf(" --> %s\n==============================\n", (isAllright ? "SUCCESS" : "FAIL"));
+}
+
 // separate solving and testing
 void CTestSuite::SeparatedSolve()
 {
@@ -345,43 +379,14 @@ void CTestSuite::SeparatedSolve()
    }
 
    // control
-   bool match2;
-   bool match3;
-   for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
-      int handno = 0;
-      for (; handno < 3; handno++) {
-         auto cmp3 = &mFut3[threadIndex][handno];
-         auto cmp2 = &mFut2[threadIndex][handno];
-         match3 = CompareFut(cmp3, handno, 3);
-         match2 = CompareFut(cmp2, handno, 2);
-
-         VERBOSE("--------------\nSeparated Solve, thrid=%d hand %d:\n", threadIndex, handno);
-         FillDeal(dl, handno);
-         VerboseLogOn23(dl, cmp3, cmp2, match3, match2);
-         isAllright = isAllright && match2 && match3;
-         WaitKey(_verboseDDS);
-      }
-      int solutions = 1;
-      for (int idx = 0; handno < TEST_HOLDINGS_COUNT; handno++, idx++) {
-         FillDeal(dl, handno);
-         auto cmp1A = &mFut1[threadIndex][idx];
-         auto cmp1B = &mFut1[threadIndex][idx + TEST_SOLVE_SAME];
-         isAllright = isAllright && CompareFut(cmp1A, handno, solutions);
-         isAllright = isAllright && CompareFut(cmp1B, handno + TEST_SOLVE_SAME, solutions);
-      }
-   }
-
-   printf("\n==============================\n"
-            "Separated DDS solve test: %s\n"
-            "==============================\n",
-            (isAllright ? "SUCCESS" : "FAIL"));
+   ControlSolvedBoards(isAllright);
 }
 
 void DoSelfTests()
 {
    auto tst = new CTestSuite;
 
-   //tst->SolveLinear();
+   tst->SolveLinear();
    tst->SeparatedSolve();
    tst->CarpenterSolve();
    //tst_JK_Solve();

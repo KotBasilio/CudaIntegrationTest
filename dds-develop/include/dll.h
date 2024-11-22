@@ -349,7 +349,7 @@ class Carpenter {
       Carpenter();
       ~Carpenter();
 
-      void SmallTest();
+      void SmallTest(boards& chunk);
 
    // device part
 };

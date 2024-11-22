@@ -15,7 +15,7 @@ const int MAX_THREADS_IN_TEST = 12;
 
 class CTestSuite
 {
-   futureTricks mFut1[MAX_THREADS_IN_TEST][TEST_SOLVE_SAME*2]; // solutions == 1
+   futureTricks mFut1[MAX_THREADS_IN_TEST][TEST_SOLVE_SAME * 2]; // solutions == 1
    futureTricks mFut2[MAX_THREADS_IN_TEST][3]; // solutions == 2
    futureTricks mFut3[MAX_THREADS_IN_TEST][3]; // solutions == 3
 
@@ -30,6 +30,7 @@ class CTestSuite
    CTestSuite();
       
    void SolveLinear();
+   void ControlSolvedBoards(bool isAllright);
    void SeparatedSolve();
    void CarpenterSolve();
 };
