@@ -5,6 +5,8 @@
    2014-2018 by Bo Haglund & Soren Hein.
 
    See LICENSE and README.
+
+   2024 GPU acceleration by Serge Mironov
 */
 #ifndef DDS_DLL_H
 #define DDS_DLL_H
@@ -339,6 +341,17 @@ int SolveSameBoard(
 
 void  ErrorMessage(int code, char line[80]);
 
-void  CarpTest();
+// -----------------------------------------
+// GPU acceleration part
+class Carpenter {
+   // host part
+   public:
+      Carpenter();
+      ~Carpenter();
+
+      void SmallTest();
+
+   // device part
+};
 
 #endif

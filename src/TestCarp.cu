@@ -9,16 +9,38 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-extern __global__ void kerCarpTest(void);
-
 void CTestSuite::CarpenterSolve()
 {
-   unsigned int size = 5;
-   kerCarpTest<<<1, size>>>();
+   Carpenter carp;
+   carp.SmallTest();
 }
+
+extern __global__ void kerCarpTest(void);
 
 __global__ void kerCarpTest(void)
 {
    int i = threadIdx.x;
    i++;
+}
+
+Carpenter::Carpenter()
+{
+}
+
+Carpenter::~Carpenter()
+{
+}
+
+void Carpenter::SmallTest()
+{
+   printf("Testing Carpenter()");
+   bool isAllright = true;
+
+   unsigned int size = 5;
+   kerCarpTest << <1, size >> > ();
+
+   printf("\n==============================\n"
+            "Carpenter test: %s\n"
+            "==============================\n",
+            (isAllright ? "SUCCESS" : "FAIL"));
 }

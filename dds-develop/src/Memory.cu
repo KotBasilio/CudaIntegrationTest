@@ -15,9 +15,6 @@
 #include "System.h"
 #include "Scheduler.h"
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-
 #define DDS_SYSTEM_THREAD_BASIC 0
 #define DDS_SYSTEM_THREAD_SIZE 1
 
@@ -55,19 +52,16 @@ void Memory::Resize(
       delete memory[i];
     }
     memory.resize(static_cast<unsigned>(n));
-    threadSizes.resize(static_cast<unsigned>(n));
   }
   else
   {
     // Upsize.
     size_t oldSize = memory.size();
     memory.resize(n);
-    threadSizes.resize(n);
     for (size_t i = oldSize; i < n; i++)
     {
       memory[i] = new ThreadData();
       memory[i]->transTable = new TransTableL;
-      threadSizes[i] = "L";
 
       memory[i]->transTable->SetMemoryDefault(memDefault_MB);
       memory[i]->transTable->SetMemoryMaximum(memMaximum_MB);
@@ -99,11 +93,6 @@ double Memory::MemoryInUseMB(int thrId) const
     8192. * sizeof(relRanksType) / static_cast<double>(1024.);
 }
 
-
-string Memory::ThreadSize(int thrId) const
-{
-  return threadSizes[thrId];
-}
 
 // from Init.cpp
 void System::Reset()

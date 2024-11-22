@@ -574,7 +574,7 @@ SOLVER_STATS:
 
 SOLVER_DONE:
 
-  thrp->memUsed = thrp->transTable->MemoryInUse() + ThreadMemoryUsed();
+  thrp->memUsed = thrp->transTable->MemoryInUse();
   futp->nodes = thrp->trickNodes;
 
 #ifdef DDS_MEMORY_LEAKS_WIN32
@@ -652,8 +652,7 @@ int SolveSameBoard(
   futp->cards = 1;
   futp->score[0] = lowerbound;
 
-  thrp->memUsed = thrp->transTable->MemoryInUse() +
-                  ThreadMemoryUsed();
+  thrp->memUsed = thrp->transTable->MemoryInUse();
 
 #ifdef DDS_TIMING
   thrp->timerList.PrintStats(thrp->fileTimerList.GetStream());
@@ -792,8 +791,7 @@ int AnalyseLaterBoard(
   futp->score[0] = lowerbound;
   futp->nodes = thrp->trickNodes;
 
-  thrp->memUsed = thrp->transTable->MemoryInUse() +
-                  ThreadMemoryUsed();
+  thrp->memUsed = thrp->transTable->MemoryInUse();
 
 #ifdef DDS_TIMING
   thrp->timerList.PrintStats(thrp->fileTimerList.GetStream());

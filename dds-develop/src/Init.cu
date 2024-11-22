@@ -361,8 +361,7 @@ void ResetBestMoves(
     thrp->bestMoveTT[d].rank = 0;
   }
 
-  thrp->memUsed = thrp->transTable->MemoryInUse() +
-                  ThreadMemoryUsed();
+  thrp->memUsed = thrp->transTable->MemoryInUse();
 }
 
 extern System sysdep;
@@ -372,17 +371,6 @@ void  FreeMemory()
 {
   for (unsigned thrId = 0; thrId < memory.NumThreads(); thrId++)
     memory.ReturnThread(thrId);
-}
-
-
-double ThreadMemoryUsed()
-{
-  // TODO:  Only needed because SolverIF wants to set it. Avoid?
-  double memUsed =
-    8192 * sizeof(relRanksType)
-    / static_cast<double>(1024.);
-
-  return memUsed;
 }
 
 

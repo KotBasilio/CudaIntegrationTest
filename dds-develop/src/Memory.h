@@ -5,6 +5,8 @@
    2014-2018 by Bo Haglund & Soren Hein.
 
    See LICENSE and README.
+
+   2024 GPU acceleration by Serge Mironov
 */
 
 #ifndef DDS_MEMORY_H
@@ -13,8 +15,8 @@
 #include "TransTable.h"
 #include "TransTableL.h"
 #include "Moves.h"
-//#include "File.h"
-//#include "debug.h"
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 
 using namespace std;
 
@@ -73,15 +75,10 @@ struct ThreadData
 class Memory
 {
   private:
-
     vector<ThreadData *> memory;
 
-    vector<string> threadSizes;
-
   public:
-
     Memory();
-
     ~Memory();
 
     void ReturnThread(int thrId);
@@ -93,12 +90,8 @@ class Memory
       const int memMaximum_MB);
 
     unsigned NumThreads() const;
-
     ThreadData * GetPtr(int thrId);
-
     double MemoryInUseMB(int thrId) const;
-
-    string ThreadSize(int thrId) const;
 };
 
 #endif

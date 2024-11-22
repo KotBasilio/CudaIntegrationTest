@@ -25,8 +25,6 @@ void InitWinners(
 
 void ResetBestMoves(ThreadData * thrp);
 
-double ThreadMemoryUsed();
-
 inline void DumpInput(const int errCode, const deal& dl, const int target, const int solutions, const int mode) {}
 
 #endif
