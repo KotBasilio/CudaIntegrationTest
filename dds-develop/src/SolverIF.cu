@@ -17,8 +17,9 @@
 #include "TimerList.h"
 #include "System.h"
 #include "Scheduler.h"
-//#include "dump.h"
-//#include "debug.h"
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
 
 extern System sysdep;
 extern Memory memory;

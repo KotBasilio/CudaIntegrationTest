@@ -5,6 +5,8 @@
    2014-2018 by Bo Haglund & Soren Hein.
 
    See LICENSE and README.
+
+   2024 GPU acceleration by Serge Mironov
 */
 
 #define  _CRT_SECURE_NO_WARNINGS
@@ -15,8 +17,9 @@
 #include "Init.h"
 #include "System.h"
 #include "Scheduler.h"
-#include "ThreadMgr.h"
-//#include "debug.h"
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 
 
 int lho[DDS_HANDS] = { 1, 2, 3, 0 };

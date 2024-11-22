@@ -62,9 +62,6 @@
     <ClInclude Include="dds-develop\src\TimerGroup.h">
       <Filter>dds\headers</Filter>
     </ClInclude>
-    <ClInclude Include="dds-develop\src\ThreadMgr.h">
-      <Filter>dds\headers</Filter>
-    </ClInclude>
     <ClInclude Include="dds-develop\src\TimerList.h">
       <Filter>dds\headers</Filter>
     </ClInclude>
@@ -110,9 +107,6 @@
       <Filter>dds</Filter>
     </CudaCompile>
     <CudaCompile Include="dds-develop\src\SolverIF.cu">
-      <Filter>dds</Filter>
-    </CudaCompile>
-    <CudaCompile Include="dds-develop\src\ThreadMgr.cu">
       <Filter>dds</Filter>
     </CudaCompile>
     <CudaCompile Include="dds-develop\src\TimerList.cu">

@@ -14,6 +14,9 @@
 #include <math.h>
 
 #include "Scheduler.h"
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
 
 
 Scheduler::Scheduler()

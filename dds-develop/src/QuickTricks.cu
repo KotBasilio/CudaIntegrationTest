@@ -11,6 +11,9 @@
 #include <algorithm>
 
 #include "QuickTricks.h"
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
 
 
 int QtricksLeadHandNT(

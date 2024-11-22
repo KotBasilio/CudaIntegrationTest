@@ -88,7 +88,6 @@
     <CudaCompile Include="dds-develop\src\QuickTricks.cu" />
     <CudaCompile Include="dds-develop\src\Scheduler.cu" />
     <CudaCompile Include="dds-develop\src\SolverIF.cu" />
-    <CudaCompile Include="dds-develop\src\ThreadMgr.cu" />
     <CudaCompile Include="dds-develop\src\TimerList.cu" />
     <CudaCompile Include="dds-develop\src\TransTableL.cu" />
     <CudaCompile Include="src\kernels.cu" />
@@ -113,7 +112,6 @@
     <ClInclude Include="dds-develop\src\Scheduler.h" />
     <ClInclude Include="dds-develop\src\SolverIF.h" />
     <ClInclude Include="dds-develop\src\System.h" />
-    <ClInclude Include="dds-develop\src\ThreadMgr.h" />
     <ClInclude Include="dds-develop\src\TimerGroup.h" />
     <ClInclude Include="dds-develop\src\TimerList.h" />
     <ClInclude Include="dds-develop\src\TransTable.h" />

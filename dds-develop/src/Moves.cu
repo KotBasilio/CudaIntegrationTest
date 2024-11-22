@@ -12,7 +12,9 @@
 #include <sstream>
 
 #include "Moves.h"
-//#include "debug.h"
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
 
 Moves::Moves()
 {
