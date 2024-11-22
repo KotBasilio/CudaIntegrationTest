@@ -9,7 +9,7 @@
 // Code stubs, compiled when CUDA is not available
 bool DetectCUDA()
 {
-   fprintf(stderr, "CUDA didn't even compile. Surely it's unavailable on this platform.\nIt's very sad to work without CUDA.\n");
+   fprintf(stderr, "CUDA didn't even compile. Surely it's unavailable on this platform.\nReverting to CPU.\n");
    return false;
 }
 
