@@ -5,7 +5,9 @@
    2014-2018 by Bo Haglund & Soren Hein.
 
    See LICENSE and README.
-*/
+
+   2024 GPU acceleration by Serge Mironov
+ */
 
 /*
    Explanation of full memory version:
@@ -85,7 +87,9 @@
 
 #include "TransTable.h"
 #include "TransTableL.h"
-//#include "debug.h"
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 
 // bitMapRank[absolute rank] is the absolute suit corresponding
 // to that rank. The absolute rank is 2 .. 14, but it is useful

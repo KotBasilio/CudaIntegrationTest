@@ -18,12 +18,13 @@
 #include "QuickTricks.h"
 #include "LaterTricks.h"
 #include "ABsearch.h"
-#include "TimerList.h"
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
 #define AB_COUNT(a, b, c) 
+#define TIMER_START(g, a) 
+#define TIMER_END(g, a) 
 
 void Make3Simple(
   pos * posPoint,

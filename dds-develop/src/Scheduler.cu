@@ -5,8 +5,9 @@
    2014-2018 by Bo Haglund & Soren Hein.
 
    See LICENSE and README.
-*/
 
+   2024 GPU acceleration by Serge Mironov
+*/
 
 #include <iostream>
 #include <iomanip>
@@ -16,7 +17,6 @@
 #include "Scheduler.h"
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-
 
 
 Scheduler::Scheduler()

@@ -5,7 +5,9 @@
    2014-2018 by Bo Haglund & Soren Hein.
 
    See LICENSE and README.
-*/
+
+   2024 GPU acceleration by Serge Mironov
+ */
 
 
 #include <algorithm>
@@ -13,8 +15,6 @@
 #include "QuickTricks.h"
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-
-
 
 int QtricksLeadHandNT(
   const int hand,

@@ -21,7 +21,6 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-
 int lho[DDS_HANDS] = { 1, 2, 3, 0 };
 int rho[DDS_HANDS] = { 3, 0, 1, 2 };
 int partner[DDS_HANDS] = { 2, 3, 0, 1 };

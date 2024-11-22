@@ -5,6 +5,8 @@
    2014-2018 by Bo Haglund & Soren Hein.
 
    See LICENSE and README.
+
+   2024 GPU acceleration by Serge Mironov
 */
 
 #include <iostream>
@@ -14,12 +16,13 @@
 #include "SolverIF.h"
 #include "Init.h"
 #include "ABsearch.h"
-#include "TimerList.h"
 #include "System.h"
 #include "Scheduler.h"
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+#define TIMER_START(g, a) 
+#define TIMER_END(g, a) 
 
 extern System sysdep;
 extern Memory memory;
