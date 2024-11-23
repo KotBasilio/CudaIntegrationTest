@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#include <cassert>
 
 #include "TestSuite.h"
 
@@ -167,7 +168,7 @@ void CTestSuite::qaPrintHand(char title[], const deal& dl, char tail[])
 
 void CTestSuite::FillDeal(deal& dl, int handno)
 {
-   if (handno < 3) {
+   if (handno < TEST_NUM_EXAMP_PKG) {
       dl.trump = trump[handno];
       dl.first = first[handno];
    } else {
@@ -204,9 +205,7 @@ CTestSuite::CTestSuite()
       _verboseDDS = true;
    #endif
 
-   memset(mFut1, 0, sizeof(mFut1));
-   memset(mFut2, 0, sizeof(mFut2));
-   memset(mFut3, 0, sizeof(mFut3));
+   memset(mFutures, 0, sizeof(mFutures));
 }
 
 void CTestSuite::VerboseLogOn23(deal& dl, const futureTricks* fut3, const futureTricks* fut2, bool match3, bool match2)
@@ -248,7 +247,7 @@ void CTestSuite::SolveLinear()
 
    for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
       int handno = 0;
-      for (; handno < 3; handno++) {
+      for (; handno < TEST_NUM_EXAMP_PKG; handno++) {
          FillDeal(dl, handno);
 
          // solve with auto-control vs expected results
@@ -283,7 +282,7 @@ void CTestSuite::SolveLinear()
          // but only for the same suit. 
          // So, it's handy only for par calculaton
          NoticeErrorDDS(res, isAllright);
-         match1 = CompareFut(&fut1, handno + TEST_SOLVE_SAME, solutions);
+         match1 = CompareFut(&fut1, handno + TEST_NUM_EXAMP_WALRUS, solutions);
          isAllright = isAllright && match1;
       }
       WaitKey(_verboseDDS);
@@ -291,10 +290,7 @@ void CTestSuite::SolveLinear()
       printf(".");
    }
 
-   printf("\n===============================\n"
-            "One-threaded DDS solve test: %s\n"
-            "===============================\n",
-            (isAllright ? "SUCCESS" : "FAIL"));
+   printf(" --> %s\n==============================\n", (isAllright ? "SUCCESS" : "FAIL"));
 }
 
 void CTestSuite::ControlSolvedBoards(bool isAllright)
@@ -302,12 +298,13 @@ void CTestSuite::ControlSolvedBoards(bool isAllright)
    int threadBegin = MAX_THREADS_IN_TEST - 1;
    bool match2;
    bool match3;
+   int idxFut = 0;
    for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
       deal dl;
       int handno = 0;
-      for (; handno < 3; handno++) {
-         auto cmp3 = &mFut3[threadIndex][handno];
-         auto cmp2 = &mFut2[threadIndex][handno];
+      for (; handno < TEST_NUM_EXAMP_PKG; handno++) {
+         auto cmp3 = &mFutures[idxFut++];
+         auto cmp2 = &mFutures[idxFut++];
          match3 = CompareFut(cmp3, handno, 3);
          match2 = CompareFut(cmp2, handno, 2);
 
@@ -320,10 +317,10 @@ void CTestSuite::ControlSolvedBoards(bool isAllright)
       int solutions = 1;
       for (int idx = 0; handno < TEST_HOLDINGS_COUNT; handno++, idx++) {
          FillDeal(dl, handno);
-         auto cmp1A = &mFut1[threadIndex][idx];
-         auto cmp1B = &mFut1[threadIndex][idx + TEST_SOLVE_SAME];
+         auto cmp1A = &mFutures[idxFut++];
+         auto cmp1B = &mFutures[idxFut++];
          isAllright = isAllright && CompareFut(cmp1A, handno, solutions);
-         isAllright = isAllright && CompareFut(cmp1B, handno + TEST_SOLVE_SAME, solutions);
+         isAllright = isAllright && CompareFut(cmp1B, handno + TEST_NUM_EXAMP_WALRUS, solutions);
       }
    }
 
@@ -344,15 +341,15 @@ void CTestSuite::SeparatedSolve()
    int mode = 0;
    int res = RETURN_NO_FAULT;
    int threadBegin = MAX_THREADS_IN_TEST - 1;
+   int idxToadd = 0;
 
    // solve & store
    for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
-      int i = 0;
-      for (; i < 3; i++) {
-         int handno = (i + threadIndex) % 3; // mix up the order of solving
+      int handno = 0;
+      for (; handno < TEST_NUM_EXAMP_PKG; handno++) {
          FillDeal(dl, handno);
-         auto out3 = &mFut3[threadIndex][handno];
-         auto out2 = &mFut2[threadIndex][handno];
+         auto out3 = &mFutures[idxToadd++];
+         auto out2 = &mFutures[idxToadd++];
 
          int solutions = 3;
          res = SolveBoard(dl, target, solutions, mode, out3, threadIndex);
@@ -365,18 +362,19 @@ void CTestSuite::SeparatedSolve()
       printf(".");
 
       int solutions = 1;
-      for (int handno = i; handno < TEST_HOLDINGS_COUNT; handno++) {
+      for (; handno < TEST_HOLDINGS_COUNT; handno++) {
          FillDeal(dl, handno);
-         auto out1 = &mFut1[threadIndex][handno - i];
+         auto out1 = &mFutures[idxToadd++];
          res = SolveBoard(dl, target, solutions, mode, out1, threadIndex);
          NoticeErrorDDS(res, isAllright);
          dl.trump = 0;
          dl.first = 0;
-         auto out4 = &mFut1[threadIndex][handno - i + TEST_SOLVE_SAME];
+         auto out4 = &mFutures[idxToadd++];
          res = SolveBoard(dl, target, solutions, mode, out4, threadIndex);
          NoticeErrorDDS(res, isAllright);
       }
    }
+   assert(idxToadd == TOTAL_FUTURES_IN_TEST);
 
    // control
    ControlSolvedBoards(isAllright);

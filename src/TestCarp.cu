@@ -3,20 +3,12 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#include <cassert>
 
 #include "TestSuite.h"
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-#include <cassert>
-
-//for (int i = 0; i < _chunkBoards.noOfBoards; i++) {
-//   DdsDeal dl(*sem.dlBase, mul.arrToSolve[chunkStartIdx + i]);
-//   _chunkBoards.deals[i] = dl.dl;
-//   _chunkBoards.target[i] = -1;
-//   _chunkBoards.solutions[i] = config.solve.ddsSol;
-//   _chunkBoards.mode[i] = 0;
-//}
 
 void CTestSuite::CarpenterSolve()
 {
@@ -30,7 +22,7 @@ void CTestSuite::CarpenterSolve()
    for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
       deal dl;
       int handno = 0;
-      for (; handno < 3; handno++) {
+      for (; handno < TEST_NUM_EXAMP_PKG; handno++) {
          FillDeal(dl, handno);
          _chunkBoards.deals[idxToadd] = dl;
          _chunkBoards.target[idxToadd] = -1;
@@ -62,7 +54,7 @@ void CTestSuite::CarpenterSolve()
          idxToadd++;
       }
    }
-   assert(idxToadd == MAX_THREADS_IN_TEST * TEST_HOLDINGS_COUNT * 2);
+   assert(idxToadd == TOTAL_FUTURES_IN_TEST);
    _chunkBoards.noOfBoards = idxToadd;
 
    // run with CUDA

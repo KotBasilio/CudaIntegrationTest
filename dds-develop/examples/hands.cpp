@@ -178,7 +178,7 @@ int cardsSoln2[3] = { 6, 3, 4 };
 int cardsSoln3[3] = { 9, 7, 8 };
 
 // Suits of cards returned. Padded with zeroes.
-int cardsSuits[TEST_HOLDINGS_COUNT + TEST_SOLVE_SAME][13] = {
+int cardsSuits[TEST_HOLDINGS_COUNT + TEST_NUM_EXAMP_WALRUS][13] = {
    { 2, 2, 2, 3, 0, 0, 1, 1, 1,    0, 0, 0, 0 },
    { 3, 3, 3, 1, 2, 0, 0,    0, 0, 0, 0, 0, 0 },
    { 1, 2, 2, 0, 1, 1, 3, 3,    0, 0, 0, 0, 0 },
@@ -194,7 +194,7 @@ int cardsSuits[TEST_HOLDINGS_COUNT + TEST_SOLVE_SAME][13] = {
    { 3},
 };
 // Ranks for cards returned (2 .. 14).  Padded with zeroes.
-int cardsRanks[TEST_HOLDINGS_COUNT+TEST_SOLVE_SAME][13] = {
+int cardsRanks[TEST_HOLDINGS_COUNT+TEST_NUM_EXAMP_WALRUS][13] = {
    { 5, 8,11,10, 6,12, 2, 6,13,    0, 0, 0, 0 },
    { 2, 8,12,10, 6,12, 5,    0, 0, 0, 0, 0, 0 },
    {14, 3, 7, 5, 5, 9, 6,13,    0, 0, 0, 0, 0 },
@@ -203,7 +203,7 @@ int cardsRanks[TEST_HOLDINGS_COUNT+TEST_SOLVE_SAME][13] = {
 };
 
 // Scores for cards returned.
-int cardsScores[TEST_HOLDINGS_COUNT+TEST_SOLVE_SAME][13] = {
+int cardsScores[TEST_HOLDINGS_COUNT+TEST_NUM_EXAMP_WALRUS][13] = {
    { 5, 5, 5, 5, 5, 5, 4, 4, 4,    0, 0, 0, 0 },
    { 4, 4, 4, 3, 3, 3, 2,    0, 0, 0, 0, 0, 0 },
    { 3, 3, 3, 3, 2, 2, 1, 1,    0, 0, 0, 0, 0 },
@@ -212,7 +212,7 @@ int cardsScores[TEST_HOLDINGS_COUNT+TEST_SOLVE_SAME][13] = {
 };
 
 // Equals for cards returned, i.e. equivalent cards (rank vectors).
-int cardsEquals[TEST_HOLDINGS_COUNT+TEST_SOLVE_SAME][13] = {
+int cardsEquals[TEST_HOLDINGS_COUNT+TEST_NUM_EXAMP_WALRUS][13] = {
    { 0,   0,   0, 768,   0,2048,   0,  32,   0,    0,0,0,0},
    { 0,   0,2048,   0,   0,3072,  28,          0,0,0,0,0,0},
    { 0,   4,  64,   0,  28,   0,   0,   0,       0,0,0,0,0},

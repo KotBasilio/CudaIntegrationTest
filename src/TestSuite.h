@@ -12,12 +12,11 @@ void WaitKey(bool yes);
    #define VERBOSE(...)
 #endif
 const int MAX_THREADS_IN_TEST = 12;
+const int TOTAL_FUTURES_IN_TEST = MAX_THREADS_IN_TEST * TEST_HOLDINGS_COUNT * 2;
 
 class CTestSuite
 {
-   futureTricks mFut1[MAX_THREADS_IN_TEST][TEST_SOLVE_SAME * 2]; // solutions == 1
-   futureTricks mFut2[MAX_THREADS_IN_TEST][3]; // solutions == 2
-   futureTricks mFut3[MAX_THREADS_IN_TEST][3]; // solutions == 3
+   futureTricks mFutures[TOTAL_FUTURES_IN_TEST];
 
    void PrintFut(char title[], const futureTricks* fut);
    uint CalcNSLineHCP(const deal& dl, uint& ctrl);

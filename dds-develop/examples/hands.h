@@ -18,8 +18,9 @@ extern int vul[3];
 
 extern char PBN[3][80];
 
-constexpr int TEST_SOLVE_SAME = 4;
-constexpr int TEST_HOLDINGS_COUNT = 3 + TEST_SOLVE_SAME;
+constexpr int TEST_NUM_EXAMP_PKG = 3;
+constexpr int TEST_NUM_EXAMP_WALRUS = 4;
+constexpr int TEST_HOLDINGS_COUNT = TEST_NUM_EXAMP_PKG + TEST_NUM_EXAMP_WALRUS;
 extern unsigned int holdings[TEST_HOLDINGS_COUNT][4][4];
 
 extern int playNo[3];
