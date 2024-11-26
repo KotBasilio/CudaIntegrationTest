@@ -74,6 +74,9 @@
     <ClInclude Include="src\TestSuite.h">
       <Filter>test</Filter>
     </ClInclude>
+    <ClInclude Include="dds-develop\include\carpenter.h">
+      <Filter>dds\headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\kernels.cu">

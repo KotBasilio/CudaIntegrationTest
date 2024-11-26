@@ -341,17 +341,6 @@ int SolveSameBoard(
 
 void  ErrorMessage(int code, char line[80]);
 
-// -----------------------------------------
-// GPU acceleration part
-class Carpenter {
-   // host part
-   public:
-      Carpenter();
-      ~Carpenter();
-
-      void SmallTest(boards& chunk);
-
-   // device part
-};
+#include "carpenter.h"
 
 #endif

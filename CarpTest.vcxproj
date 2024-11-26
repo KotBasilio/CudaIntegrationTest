@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dds-develop\examples\hands.h" />
+    <ClInclude Include="dds-develop\include\carpenter.h" />
     <ClInclude Include="dds-develop\include\dll.h" />
     <ClInclude Include="dds-develop\include\portab.h" />
     <ClInclude Include="dds-develop\src\ABsearch.h" />

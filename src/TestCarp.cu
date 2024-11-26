@@ -7,16 +7,8 @@
 
 #include "TestSuite.h"
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-
-void CTestSuite::CarpenterSolve()
+void CTestSuite::PrepareChunk(boards& _chunkBoards)
 {
-   printf("Testing Carpenter()");
-   bool isAllright = true;
-
-   // prepare all boards
-   static boards _chunkBoards;
    int idxToadd = 0;
    int threadBegin = MAX_THREADS_IN_TEST - 1;
    for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
@@ -56,10 +48,20 @@ void CTestSuite::CarpenterSolve()
    }
    assert(idxToadd == TOTAL_FUTURES_IN_TEST);
    _chunkBoards.noOfBoards = idxToadd;
+}
+
+void CTestSuite::CarpenterSolve()
+{
+   printf("Testing Carpenter()");
+   bool isAllright = true;
+
+   // prepare all boards
+   static boards _chunkBoards;
+   PrepareChunk(_chunkBoards);
 
    // run with CUDA
    Carpenter carp;
-   carp.SmallTest(_chunkBoards);
+   carp.SolveChunk(_chunkBoards);
 
    // compare
    ControlSolvedBoards(isAllright);
@@ -82,12 +84,36 @@ Carpenter::~Carpenter()
    printf("~");
 }
 
-void Carpenter::SmallTest(boards &chunk)
+void Carpenter::SmallTest()
 {
-   printf("...");
+   //printf("...");
 
-   unsigned int size = MAX_THREADS_IN_TEST;
-   kerCarpTest << <1, size >> > ();
+   //unsigned int size = MAX_THREADS_IN_TEST;
+   //kerCarpTest << <1, size >> > ();
 
 }
 
+__global__ void CarpFanOut(Carpenter *carp, boards& chunk);
+
+void Carpenter::SolveChunk(boards& chunk)
+{
+   printf("...");
+   CarpFanOut << <1, chunk.noOfBoards >> > (this, chunk);
+}
+
+__global__ void CarpFanOut(Carpenter * carp, boards & chunk)
+{
+   int i = threadIdx.x;
+   deal* myDeal = chunk.deals + i;
+   carp->Solve(myDeal);
+}
+
+__device__ void Carpenter::Solve(deal* myDeal)
+{
+
+}
+
+__device__ int Carpenter::SolveBoard(const deal& dl, const int target, const int solutions, const int mode, futureTricks* futp, ThreadData* thrp)
+{
+   return 1;
+}

@@ -31,5 +31,6 @@ class CTestSuite
    void SolveLinear();
    void ControlSolvedBoards(bool isAllright);
    void SeparatedSolve();
+   void PrepareChunk(boards& _chunkBoards);
    void CarpenterSolve();
 };
