@@ -82,9 +82,6 @@
     <CudaCompile Include="src\kernels.cu">
       <Filter>test</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\TestCarp.cu">
-      <Filter>test</Filter>
-    </CudaCompile>
     <CudaCompile Include="dds-develop\src\ABsearch.cu">
       <Filter>dds</Filter>
     </CudaCompile>

@@ -16,15 +16,18 @@
 #include "System.h"
 #include "Scheduler.h"
 
-extern System sysdep;
-extern Memory memory;
-extern Scheduler scheduler;
-
 __global__ void CarpFanOut(Carpenter * carp, boards & chunk)
 {
    int i = threadIdx.x;
-   deal* myDeal = chunk.deals + i;
-   carp->Solve(myDeal);
+   //deal* myDeal = chunk.deals + i;
+   carp->SolveBoard(
+      chunk.deals[i],
+      chunk.target[i],
+      chunk.solutions[i],
+      chunk.mode[i],
+      nullptr,
+      nullptr
+   );
 }
 
 void Carpenter::SolveChunk(boards& chunk)
@@ -35,22 +38,47 @@ void Carpenter::SolveChunk(boards& chunk)
 
 class CarpImpl
 {
+   System sysdep;
+   //Memory memory;
+   //Scheduler scheduler;
 
+public:
+   CarpImpl() {}
+   ~CarpImpl() {}
 };
 
 Carpenter::Carpenter()
 {
+   Instance = new CarpImpl();
 }
 
 Carpenter::~Carpenter()
 {
-   printf("~");
+   if (Instance) {
+      delete Instance;
+      Instance = nullptr;
+      printf("~");
+   }
 }
 
-__device__ void Carpenter::Solve(deal* myDeal)
+__global__ void kerCarpTest(void)
 {
-
+   int i = threadIdx.x;
+   i++;
 }
+
+void Carpenter::SmallTest()
+{
+   printf("...");
+   unsigned int size = 100;
+   kerCarpTest << <1, size >> > ();
+}
+
+//__device__ void Carpenter::Dummy(deal* myDeal)
+//{
+//
+//}
+//
 
 __device__ int Carpenter::SolveBoard(const deal& dl, const int target, const int solutions, const int mode, futureTricks* futp, ThreadData* thrp)
 {

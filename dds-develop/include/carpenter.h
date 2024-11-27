@@ -17,7 +17,6 @@ public:
    void SolveChunk(boards& chunk);
 
    // device part
-   __device__ void Solve(deal* myDeal);
    __device__ int  SolveBoard(
       const struct deal &dl,
       const int target,
