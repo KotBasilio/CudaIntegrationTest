@@ -15,7 +15,7 @@
 #include "System.h"
 #include "Scheduler.h"
 
-#define DDS_SYSTEM_THREAD_BASIC 0
+#define DDS_SYSTEM_THREAD_CUDA 0
 #define DDS_SYSTEM_THREAD_SIZE 1
 
 System sysdep;
@@ -99,33 +99,6 @@ void System::Reset()
 {
    runCat = DDS_RUN_SOLVE;
    numThreads = 1;
-
-   preferredSystem = DDS_SYSTEM_THREAD_BASIC;
-   availableSystem.resize(DDS_SYSTEM_THREAD_SIZE);
-   availableSystem[DDS_SYSTEM_THREAD_BASIC] = true;
-
-   //RunPtrList.resize(DDS_SYSTEM_THREAD_SIZE);
-   //RunPtrList[DDS_SYSTEM_THREAD_BASIC] = &System::RunThreadsBasic; 
-
-   //CallbackSimpleList.resize(DDS_RUN_SIZE);
-   //CallbackSimpleList[DDS_RUN_SOLVE] = SolveChunkCommon;
-   //CallbackSimpleList[DDS_RUN_CALC] = CalcChunkCommon;
-   //CallbackSimpleList[DDS_RUN_TRACE] = PlayChunkCommon;
-
-   //CallbackDuplList.resize(DDS_RUN_SIZE);
-   //CallbackDuplList[DDS_RUN_SOLVE] = DetectSolveDuplicates;
-   //CallbackDuplList[DDS_RUN_CALC] = DetectCalcDuplicates;
-   //CallbackDuplList[DDS_RUN_TRACE] = DetectPlayDuplicates;
-
-   //CallbackSingleList.resize(DDS_RUN_SIZE);
-   //CallbackSingleList[DDS_RUN_SOLVE] = SolveSingleCommon;
-   //CallbackSingleList[DDS_RUN_CALC] = CalcSingleCommon;
-   //CallbackSingleList[DDS_RUN_TRACE] = PlaySingleCommon;
-
-   //CallbackCopyList.resize(DDS_RUN_SIZE);
-   //CallbackCopyList[DDS_RUN_SOLVE] = CopySolveSingle;
-   //CallbackCopyList[DDS_RUN_CALC] = CopyCalcSingle;
-   //CallbackCopyList[DDS_RUN_TRACE] = CopyPlaySingle;
 }
 
 void InitConstants();
@@ -148,31 +121,10 @@ void SetResources()
       DDS_TT_LARGE, THREADMEM_LARGE_DEF_MB, THREADMEM_LARGE_MAX_MB);
 
    InitConstants();
-
-   //runCat	DDS_RUN_SOLVE (0)	RunMode
-   //   numThreads	12	int
-   //   sysMem_MB	11387	int
 }
 
 bool System::ThreadOK(const int thrId) const
 {
    return (0 <= thrId && thrId < numThreads);
 }
-
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-
-#define TMMP_MAC __global__
-
-//__global__ void kerCarpTest(void)
-//{
-//   int i = threadIdx.x;
-//}
-//
-//void CarpTest()
-//{
-//   unsigned int size = 5;
-//   kerCarpTest<<<1, size>>>();
-//}
-
 

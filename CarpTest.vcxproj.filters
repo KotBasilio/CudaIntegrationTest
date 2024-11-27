@@ -112,5 +112,8 @@
     <CudaCompile Include="dds-develop\src\TransTableL.cu">
       <Filter>dds</Filter>
     </CudaCompile>
+    <CudaCompile Include="dds-develop\src\Carpenter.cu">
+      <Filter>dds</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

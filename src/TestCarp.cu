@@ -61,13 +61,12 @@ void CTestSuite::CarpenterSolve()
 
    // run with CUDA
    Carpenter carp;
+   carp.SmallTest();
    carp.SolveChunk(_chunkBoards);
 
    // compare
    ControlSolvedBoards(isAllright);
 }
-
-extern __global__ void kerCarpTest(void);
 
 __global__ void kerCarpTest(void)
 {
@@ -75,45 +74,10 @@ __global__ void kerCarpTest(void)
    i++;
 }
 
-Carpenter::Carpenter()
-{
-}
-
-Carpenter::~Carpenter()
-{
-   printf("~");
-}
-
 void Carpenter::SmallTest()
 {
-   //printf("...");
-
-   //unsigned int size = MAX_THREADS_IN_TEST;
-   //kerCarpTest << <1, size >> > ();
-
-}
-
-__global__ void CarpFanOut(Carpenter *carp, boards& chunk);
-
-void Carpenter::SolveChunk(boards& chunk)
-{
    printf("...");
-   CarpFanOut << <1, chunk.noOfBoards >> > (this, chunk);
+   unsigned int size = MAX_THREADS_IN_TEST;
+   kerCarpTest << <1, size >> > ();
 }
 
-__global__ void CarpFanOut(Carpenter * carp, boards & chunk)
-{
-   int i = threadIdx.x;
-   deal* myDeal = chunk.deals + i;
-   carp->Solve(myDeal);
-}
-
-__device__ void Carpenter::Solve(deal* myDeal)
-{
-
-}
-
-__device__ int Carpenter::SolveBoard(const deal& dl, const int target, const int solutions, const int mode, futureTricks* futp, ThreadData* thrp)
-{
-   return 1;
-}

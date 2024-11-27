@@ -81,6 +81,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="dds-develop\src\ABsearch.cu" />
+    <CudaCompile Include="dds-develop\src\Carpenter.cu" />
     <CudaCompile Include="dds-develop\src\Init.cu" />
     <CudaCompile Include="dds-develop\src\LaterTricks.cu" />
     <CudaCompile Include="dds-develop\src\Memory.cu" />

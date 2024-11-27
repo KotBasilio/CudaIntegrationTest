@@ -26,4 +26,6 @@ public:
       struct futureTricks * futp,
       struct ThreadData* thrp);
 
+private:
+   class CarpImpl* Instance = nullptr;
 };

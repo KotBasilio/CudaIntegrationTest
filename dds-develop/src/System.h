@@ -21,12 +21,6 @@
 
 using namespace std;
 
-typedef void (*fptrType)(const int thid);
-typedef void (*fduplType)(
-  const boards& bds, vector<int>& uniques, vector<int>& crossrefs);
-typedef void (*fsingleType)(const int thid, const int bno);
-typedef void (*fcopyType)(const vector<int>& crossrefs);
-
 class System
 {
 private:
@@ -38,21 +32,6 @@ private:
    int thrDef_MB;
    int thrMax_MB;
 
-   unsigned preferredSystem;
-
-   vector<bool> availableSystem;
-
-   vector<fptrType> CallbackSimpleList;
-   vector<fduplType> CallbackDuplList;
-   vector<fsingleType> CallbackSingleList;
-   vector<fcopyType> CallbackCopyList;
-
-   typedef int (System::*RunPtr)();
-   vector<RunPtr> RunPtrList;
-
-   fptrType fptr;
-
-   boards const * bop;
 public:
    System() { Reset(); }
    ~System() {}
