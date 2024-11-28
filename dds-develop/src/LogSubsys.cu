@@ -21,12 +21,12 @@ __host__ void LogSubsystem::PrintLog() const
 
 __device__ const char* ErrorCodeToString(ErrorCode code) {
    switch (code) {
-      case ErrorCode::SUCCESS: return "OK";
-      case ErrorCode::FAILURE: return "FAIL";
-      case ErrorCode::OUT_OF_BOUNDS: return "BND";
-      case ErrorCode::INVALID_ARGUMENT: return "ARG";
+      case ErrorCode::SUCCESS: return " OK-";
+      case ErrorCode::FAILURE: return "FLR-";
+      case ErrorCode::OUT_OF_BOUNDS: return "BND-";
+      case ErrorCode::INVALID_ARGUMENT: return "ARG-";
       case ErrorCode::UNKNOWN_ERROR: 
-      default: return "UNKNOWN_ERROR";
+      default: return "UER-";
    }
 }
 
@@ -61,7 +61,8 @@ inline __device__ void devItoa(int value, char* str)
       value /= base;
    } while (value != 0);
 
-   str[i] = '\0';  // Null-terminate the string
+   str[i]   = '-';
+   str[i+1] = '\0';  // Null-terminate the string
 
    // Reverse the string as the digits are in reverse order
    int start = 0;
@@ -75,19 +76,26 @@ inline __device__ void devItoa(int value, char* str)
    }
 }
 
+__device__ void LogSubsystem::AddStr(const char* str)
+{
+   int estEnd = pos + devStrlen(str);
+   if (estEnd < LOG_BUFFER_SIZE) {
+      AppendToBuffer(str);
+   }
+}
+
 __device__ void LogSubsystem::Log(ErrorCode code, const char* module, int line)
 {
-   const char* errorStr = ErrorCodeToString(code);
-   int estEnd = pos + devStrlen(errorStr);
-   if (estEnd < LOG_BUFFER_SIZE) {
-      AppendToBuffer(errorStr);
-   }
    char lbuf[5];
+   AddStr(ErrorCodeToString(code));
    devItoa(line, lbuf);
-   estEnd = pos + devStrlen(lbuf);
-   if (estEnd < LOG_BUFFER_SIZE) {
-      AppendToBuffer(lbuf);
+   AddStr(lbuf);
+   auto tail = module + devStrlen(module) - 1;
+   while (*tail != '\\') {
+      tail--;
    }
+   tail++;
+   AddStr(tail);
 }
 
 // Kernel to demonstrate usage of the LogSubsystem
@@ -102,3 +110,17 @@ __device__ void LogSubsystem::Log(ErrorCode code, const char* module, int line)
 //   }
 //}
 //
+
+__global__ void kerCarpTest(void)
+{
+   int i = threadIdx.x;
+   i++;
+}
+
+void Carpenter::SmallTest()
+{
+   printf("...");
+   unsigned int size = 100;
+   kerCarpTest << <1, size >> > ();
+}
+

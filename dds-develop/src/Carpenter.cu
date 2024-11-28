@@ -18,17 +18,15 @@
 
 #include "LogSubsys.cu"
 
-__global__ void kerCarpTest(void)
+void CopyToDeviceConstants()
 {
-   int i = threadIdx.x;
-   i++;
-}
-
-void Carpenter::SmallTest()
-{
-   printf("...");
-   unsigned int size = 100;
-   kerCarpTest << <1, size >> > ();
+   //cudaMemcpyToSymbol(d_highestRank, highestRank, sizeof(highestRank));
+   //cudaMemcpyToSymbol(d_lowestRank, lowestRank, sizeof(lowestRank));
+   //cudaMemcpyToSymbol(d_counttable, counttable, sizeof(counttable));
+   //cudaMemcpyToSymbol(d_relRank, relRank, sizeof(relRank));
+   //cudaMemcpyToSymbol(d_winRanks, winRanks, sizeof(winRanks));
+   //cudaMemcpyToSymbol(d_groupData, groupData, sizeof(groupData));
+   //cudaMemcpyToSymbol(d_bitMapRank, bitMapRank, sizeof(bitMapRank));
 }
 
 class CarpImpl {
@@ -38,8 +36,8 @@ class CarpImpl {
 
 public:
    CarpImpl() {
-      // Initialize the log subsystem explicitly, ensuring device is ready for initialization
-      cudaDeviceSynchronize();
+      // LogSubsystem is __managed__, so we initialize it explicitly
+      //cudaDeviceSynchronize();
       myLog.Initialize();
    }
 
@@ -71,7 +69,9 @@ __device__ int Carpenter::SolveBoard(const deal& dl, const int target, const int
 __global__ void CarpFanOut(Carpenter * carp, boards & chunk)
 {
    int i = threadIdx.x;
-   myLog.Log(ErrorCode::SUCCESS, __FILE__, i);
+   if (i == 163) {
+      LOG(SUCCESS);
+   }
    //deal* myDeal = chunk.deals + i;
    //carp->SolveBoard(
    //   chunk.deals[i],

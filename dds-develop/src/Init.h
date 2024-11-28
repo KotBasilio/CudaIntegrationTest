@@ -45,6 +45,7 @@ private:
    int pos;
 
    __device__ void AppendToBuffer(const char* str);
+   __device__ void AddStr(const char* str);
 
 public:
    void Initialize();
@@ -59,6 +60,6 @@ public:
 };
 
 // Macro for simplified logging
-#define LOG(errorCode) log->Log(ErrorCode::errorCode, __FILE__, __LINE__)
+#define LOG(errorCode) myLog.Log(ErrorCode::errorCode, __FILE__, __LINE__)
 
 #endif

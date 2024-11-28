@@ -434,7 +434,7 @@ void CTestSuite::CarpenterSolve()
 
    // run with CUDA
    Carpenter carp;
-   carp.SmallTest();
+   //carp.SmallTest();
    carp.SolveChunk(_chunkBoards);
 
    // compare

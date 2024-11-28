@@ -102,6 +102,7 @@ void System::Reset()
 }
 
 void InitConstants();
+void CopyToDeviceConstants();
 
 void SetResources()
 {
@@ -121,6 +122,7 @@ void SetResources()
       DDS_TT_LARGE, THREADMEM_LARGE_DEF_MB, THREADMEM_LARGE_MAX_MB);
 
    InitConstants();
+   CopyToDeviceConstants();
 }
 
 bool System::ThreadOK(const int thrId) const
