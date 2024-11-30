@@ -25,21 +25,31 @@ int lho[DDS_HANDS] = { 1, 2, 3, 0 };
 int rho[DDS_HANDS] = { 3, 0, 1, 2 };
 int partner[DDS_HANDS] = { 2, 3, 0, 1 };
 
-// There is no particular reason for the different types here,
-// other than historical ones. They could all be char's for
-// memory reasons, or all be int's for performance reasons.
-
+// host
 int highestRank[8192];
 int lowestRank[8192];
 int counttable[8192];
 char relRank[8192][15];
 unsigned short int winRanks[8192][14];
-
 moveGroupType groupData[8192];
 
+// device __constant__ 
+__constant__ int d_highestRank[8192];// 32K  TO DO: char, would be 4 times less
+__constant__ int d_lowestRank[8192]; // 32K  TO DO: char, would be 4 times less
+// = 64 K
+
+void CopyToDeviceConstants()
+{
+   cudaMemcpyToSymbol(d_highestRank, highestRank, sizeof(highestRank));
+   cudaMemcpyToSymbol(d_lowestRank, lowestRank, sizeof(lowestRank));
+   //cudaMemcpyToSymbol(d_counttable, counttable, sizeof(counttable));
+   //cudaMemcpyToSymbol(d_relRank, relRank, sizeof(relRank));
+   //cudaMemcpyToSymbol(d_winRanks, winRanks, sizeof(winRanks));
+   //cudaMemcpyToSymbol(d_groupData, groupData, sizeof(groupData));
+   //cudaMemcpyToSymbol(d_bitMapRank, bitMapRank, sizeof(bitMapRank));
+}
 
 int _initialized = 0;
-
 
 void InitConstants()
 {
@@ -71,8 +81,7 @@ void InitConstants()
   // The use of the counttable to give the number of bits set to
   // one in an integer follows an implementation by Thomas Andrews.
 
-  // counttable[aggr] is the number of '1' bits (binary weight)
-  // in aggr.
+  // counttable[aggr] is the number of bits set to 1 in aggr.
   for (int aggr = 0; aggr < 8192; aggr++)
   {
     counttable[aggr] = 0;

@@ -18,17 +18,6 @@
 
 #include "LogSubsys.cu"
 
-void CopyToDeviceConstants()
-{
-   //cudaMemcpyToSymbol(d_highestRank, highestRank, sizeof(highestRank));
-   //cudaMemcpyToSymbol(d_lowestRank, lowestRank, sizeof(lowestRank));
-   //cudaMemcpyToSymbol(d_counttable, counttable, sizeof(counttable));
-   //cudaMemcpyToSymbol(d_relRank, relRank, sizeof(relRank));
-   //cudaMemcpyToSymbol(d_winRanks, winRanks, sizeof(winRanks));
-   //cudaMemcpyToSymbol(d_groupData, groupData, sizeof(groupData));
-   //cudaMemcpyToSymbol(d_bitMapRank, bitMapRank, sizeof(bitMapRank));
-}
-
 class CarpImpl {
    System sysdep;
    //Memory memory;
@@ -66,10 +55,14 @@ __device__ int Carpenter::SolveBoard(const deal& dl, const int target, const int
    return 1;
 }
 
+extern __constant__ int d_highestRank[8192];
+extern __constant__ int d_lowestRank[8192];
+
 __global__ void CarpFanOut(Carpenter * carp, boards & chunk)
 {
    int i = threadIdx.x;
-   if (i == 163) {
+   i += d_lowestRank[i];
+   if (i == 164) {
       LOG(SUCCESS);
    }
    //deal* myDeal = chunk.deals + i;

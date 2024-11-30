@@ -51,6 +51,7 @@ __global__ void addOtherKernel(int *c, const int *a, const int *b)
    c[i] += a[i]/2 + 10;
 }
 
+#ifdef TEST_CONSTANT_MEMORY
 __constant__ int constantArray[20];
 
 __global__ void kerWithConstMem(int *c, const int *a, const int *b)
@@ -59,6 +60,7 @@ __global__ void kerWithConstMem(int *c, const int *a, const int *b)
    SumParts(c+i, a+i, b+i);
    c[i] += a[i]/2 + constantArray[i];
 }
+#endif
 
 __global__ void kerFillMapped(float *mapped, float *map2)
 {
@@ -177,20 +179,22 @@ bool CopyBuffersToDev(int* c, const int* a, const int* b,
 
 bool FillConstantMem()
 {
-   // fill
-   int host_arr[20];
-   for (int i = 0; i < 20; i++) {
-      host_arr[i] = 10*(i+1);
-   }
+   #ifdef TEST_CONSTANT_MEMORY
+      // fill
+      int host_arr[20];
+      for (int i = 0; i < 20; i++) {
+         host_arr[i] = 10*(i+1);
+      }
 
-   // pass to device
-   auto st = cudaMemcpyToSymbol(constantArray, host_arr, sizeof(host_arr));
-   if (st != cudaSuccess) {
-      fprintf(stderr, "FillConstantMem failed!");
-      return false;
-   }
+      // pass to device
+      auto st = cudaMemcpyToSymbol(constantArray, host_arr, sizeof(host_arr));
+      if (st != cudaSuccess) {
+         fprintf(stderr, "FillConstantMem failed!");
+         return false;
+      }
 
-   ShowMemStat("after const  ");
+      ShowMemStat("after const  ");
+   #endif
 
    return true;
 }
@@ -236,8 +240,8 @@ int PokeCudaAPI(int *c, const int *a, const int *b, unsigned int size)
       goto CleanUp;
    }
 
-   // Add vectors in parallel.
-   //    Launch a kernel on the GPU with one thread for each element.
+#ifdef TEST_CONSTANT_MEMORY
+   // Launch a kernel on the GPU with one thread for each element.
    //addKernel<<<1, size>>>(dev_c, dev_a, dev_b);
    //addOtherKernel<<<1, size>>>(dev_c, dev_a, dev_b);
    //IncKernelFunc<<<1, size>>>(dev_c);
@@ -246,6 +250,7 @@ int PokeCudaAPI(int *c, const int *a, const int *b, unsigned int size)
       fprintf(stderr, "addKernel launch failed: %s\n", cudaGetErrorString(cudaGetLastError()));
       goto CleanUp;
    }
+#endif
 
    // Fill mapped memory -- one thread for each element.
    kerFillMapped<<<1, size>>>(devArrMapped, devSecondMapped);
