@@ -69,6 +69,12 @@ __global__ void kerFillMapped(float *mapped, float *map2)
    map2[thrID] = 10.f + thrID;
 }
 
+__global__ void kerAddWithMapped(int* c, const int* a, const int* b, float* map2)
+{
+   int i = threadIdx.x;
+   c[i] = a[i] + b[i] + map2[i];
+}
+
 // --------------------------------------------------------------
 // host part
 
@@ -255,10 +261,20 @@ int PokeCudaAPI(int *c, const int *a, const int *b, unsigned int size)
    // Fill mapped memory -- one thread for each element.
    kerFillMapped<<<1, size>>>(devArrMapped, devSecondMapped);
    if (cudaGetLastError() != cudaSuccess) {
+      fprintf(stderr, "kerFillMapped launch failed: %s\n", cudaGetErrorString(cudaGetLastError()));
+      goto CleanUp;
+   }
+
+   // <<<<<<<<<<<< MAP SYNC >>>>>>>>>>>>>>>>
+   st = cudaDeviceSynchronize();
+
+   // actual add
+   kerAddWithMapped<<<1, size>>>(dev_c, dev_a, dev_b, devSecondMapped);
+   if (cudaGetLastError() != cudaSuccess) {
       fprintf(stderr, "addKernel launch failed: %s\n", cudaGetErrorString(cudaGetLastError()));
       goto CleanUp;
    }
-                           
+
    // <<<<<<<<<<<< MAIN SYNC >>>>>>>>>>>>>>>>
    //    cudaDeviceSynchronize waits for the kernel to finish, and returns
    //    any errors encountered during the launch.
