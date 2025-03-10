@@ -60,7 +60,7 @@ void main()
 {
    DoSelfTests();
 
-   TestCudaWays();
+   //TestCudaWays();
    CudaClose();
    TestHeap();
    WaitKey();

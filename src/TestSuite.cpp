@@ -227,7 +227,8 @@ void CTestSuite::VerboseLogOn23(deal& dl, const futureTricks* fut3, const future
 
 void CTestSuite::SolveLinear()
 {
-   printf("Linear test for SolveBoard()");
+   printf("\n--------------");
+   printf("\nLinear test for SolveBoard():\n>> CPU variant from source DDS lib, basic varification ");
    SetResources();
    bool isAllright = true;
 
@@ -245,9 +246,13 @@ void CTestSuite::SolveLinear()
    bool match3;
    int threadBegin = MAX_THREADS_IN_TEST - 1;
 
+   // we pretend we're testing several threads, but we do it sequentally
+   // -- FillDeal() gets some pre-defined deal
+   // -- CompareFut() checks vs expected results
+   // -- basic test cycle: FillDeal() -> SolveBoard() -> CompareFut() done in a close succession
    for (int threadIndex = threadBegin; threadIndex >= 0; threadIndex--) {
       int handno = 0;
-      for (; handno < TEST_NUM_EXAMP_PKG; handno++) {
+      for (; handno < TEST_NUM_EXAMP_PKG; handno++) { // one for solutions par 2, and another for solutions par 3
          FillDeal(dl, handno);
 
          // solve with auto-control vs expected results
@@ -263,13 +268,13 @@ void CTestSuite::SolveLinear()
          match2 = CompareFut(&fut2, handno, solutions);
 
          // out
-         VERBOSE("--------------\nSolveBoard, thrid=%d hand %d:\n", threadIndex, handno);
+         VERBOSE("\n--------------\nSolveBoard, thrid=%d hand %d:\n", threadIndex, handno);
          VerboseLogOn23(dl, &fut3, &fut2, match3, match2);
          isAllright = isAllright && match2 && match3;
       }
 
       solutions = 1;
-      for (; handno < TEST_HOLDINGS_COUNT; handno++) {
+      for (; handno < TEST_HOLDINGS_COUNT; handno++) { // for solutions par 1, twice -- the second is for different trump and declarer
          FillDeal(dl, handno);
          res = SolveBoard(dl, target, solutions, mode, &fut1, threadIndex);
          NoticeErrorDDS(res, isAllright);
@@ -278,9 +283,6 @@ void CTestSuite::SolveLinear()
          dl.trump = 0;
          dl.first = 0;
          res = SolveBoard(dl, target, solutions, mode, &fut1, threadIndex);
-         // can use SolveSameBoard(threadIndex, dl, &fut1, fut1.score[0]); 
-         // but only for the same suit. 
-         // So, it's handy only for par calculaton
          NoticeErrorDDS(res, isAllright);
          match1 = CompareFut(&fut1, handno + TEST_NUM_EXAMP_WALRUS, solutions);
          isAllright = isAllright && match1;
@@ -291,6 +293,10 @@ void CTestSuite::SolveLinear()
    }
 
    printf(" --> %s\n==============================\n", (isAllright ? "SUCCESS" : "FAIL"));
+
+   // Side note: 
+   // It's possible to use SolveSameBoard(threadIndex, dl, &fut1, fut1.score[0]); but only for the same suit. 
+   // So, it's handy only for par calculaton
 }
 
 void CTestSuite::ControlSolvedBoards(bool isAllright)
@@ -332,7 +338,8 @@ void CTestSuite::ControlSolvedBoards(bool isAllright)
 void CTestSuite::SeparatedSolve()
 {
    SetResources();
-   printf("Testing Separated()");
+   printf("\n==============================");
+   printf("\nA separated version of test for SolveBoard() -- on CPU:\n>> results are compared only after all boards solved");
    bool isAllright = true;
 
    deal dl;

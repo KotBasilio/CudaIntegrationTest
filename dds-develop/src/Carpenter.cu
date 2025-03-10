@@ -62,9 +62,13 @@ __global__ void CarpFanOut(Carpenter * carp, boards & chunk)
 {
    int i = threadIdx.x;
    i += d_lowestRank[i];
-   if (i == 164) {
-      LOG(SUCCESS);
+   //if (i == 164) {
+   //   LOG(SUCCESS);
+   //}
+   if (i == 16) {
+      LOG(INVALID_ARGUMENT);
    }
+
    //deal* myDeal = chunk.deals + i;
    //carp->SolveBoard(
    //   chunk.deals[i],
@@ -76,9 +80,23 @@ __global__ void CarpFanOut(Carpenter * carp, boards & chunk)
    //);
 }
 
+//__global__ void CarpFanGarbage(Carpenter *carp, boards & chunk) {
+//   int idx = threadIdx.x;
+//
+//   // Ensure we don't go out of bounds
+//   if (idx < chunk.noOfBoards) {
+//      // Write garbage values into mFutures (futureTricks struct)
+//      chunk.futures[idx].cards = 999;  // Garbage value for number of tricks
+//      chunk.futures[idx].suit[0] = 3;  // Fake suit
+//      chunk.futures[idx].rank[0] = 14; // Fake rank (Ace)
+//      chunk.futures[idx].score[0] = -99; // Fake score
+//   }
+//}
+
 void Carpenter::SolveChunk(boards& chunk)
 {
-   printf("...");
-   CarpFanOut << <1, chunk.noOfBoards >> > (this, chunk);
+   printf("... %d boards on GPU ... ", chunk.noOfBoards);
+   CarpFanOut <<< 1, chunk.noOfBoards >>> (this, chunk);
+   //CarpFanGarbage <<< 1, chunk.noOfBoards >>> (this, chunk);
 }
 
