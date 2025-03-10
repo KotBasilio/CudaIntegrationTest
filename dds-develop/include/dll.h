@@ -343,4 +343,7 @@ void  ErrorMessage(int code, char line[80]);
 
 #include "carpenter.h"
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
 #endif

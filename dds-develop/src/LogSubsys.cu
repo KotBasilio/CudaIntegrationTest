@@ -110,17 +110,3 @@ __device__ void LogSubsystem::Log(ErrorCode code, const char* module, int line)
 //   }
 //}
 //
-
-__global__ void kerCarpTest(void)
-{
-   int i = threadIdx.x;
-   i++;
-}
-
-void Carpenter::SmallTest()
-{
-   printf("...");
-   unsigned int size = 100;
-   kerCarpTest << <1, size >> > ();
-}
-

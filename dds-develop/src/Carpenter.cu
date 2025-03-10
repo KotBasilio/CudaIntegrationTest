@@ -18,59 +18,142 @@
 
 #include "LogSubsys.cu"
 
+// device part of Carpenter
 class CarpImpl {
    System sysdep;
    //Memory memory;
    //Scheduler scheduler;
 
 public:
+   __device__ void SolveBoardOnGPU(int idx);
+
+   __device__ int  SolveBoard(
+      const struct deal &dl,
+      const int target,
+      const int solutions,
+      const int mode,
+      struct futureTricks * futp,
+      struct ThreadData* thrp);
+
+   futureTricks* d_futures = nullptr;  // Persistent GPU buffer for results
+   boards* d_chunk = nullptr;          // GPU copy of chunk
+   CarpImpl* d_carp = nullptr;         // GPU copy of this class
+   int noOfBoards = 0;
+
    CarpImpl() {
-      // LogSubsystem is __managed__, so we initialize it explicitly
-      //cudaDeviceSynchronize();
-      myLog.Initialize();
+      cudaMalloc(&d_futures, MAXNOOFBOARDS * sizeof(futureTricks));
+      cudaMalloc(&d_chunk, sizeof(boards));
+      cudaMalloc(&d_carp, sizeof(CarpImpl));
    }
 
    ~CarpImpl() {
-      // Print the log on destruction
-      cudaDeviceSynchronize();
-      myLog.PrintLog();
+      cudaFree(d_futures);
+      cudaFree(d_chunk);
+      cudaFree(d_carp);
+   }
+
+   void SyncUp(boards& chunk) {
+      if (d_carp && d_chunk) {
+         // store total
+         noOfBoards = chunk.noOfBoards;
+
+         // Copy chunk from host to device before running kernel
+         cudaMemcpy(d_chunk, &chunk, sizeof(*d_chunk), cudaMemcpyHostToDevice);
+
+         // Copy latest Carpenter state to GPU
+         cudaMemcpy(d_carp, this, sizeof(*d_carp), cudaMemcpyHostToDevice);
+      } else {
+         noOfBoards = 0;
+      }
+   }
+
+   void SyncDown(futureTricks* h_Futures, int maxFut) {
+      if (d_futures && (noOfBoards == maxFut)) {
+         // Copy results back from GPU to CPU
+         cudaDeviceSynchronize();
+         cudaMemcpy(h_Futures, d_futures, maxFut * sizeof(futureTricks), cudaMemcpyDeviceToHost);
+      } else {
+         printf("... mismatch boards count: %d ", noOfBoards);
+      }
    }
 };
 
 Carpenter::Carpenter()
 {
-   Instance = new CarpImpl();
+   // LogSubsystem is __managed__, so we initialize it explicitly
+   myLog.Initialize();
+
+   Himpl = new CarpImpl;
 }
 
 Carpenter::~Carpenter()
 {
-   if (Instance) {
-      delete Instance;
-      Instance = nullptr;
-   }
-}
+   if (Himpl) {
+      // destory
+      delete Himpl;
+      Himpl = nullptr;
 
-__device__ int Carpenter::SolveBoard(const deal& dl, const int target, const int solutions, const int mode, futureTricks* futp, ThreadData* thrp)
-{
-   return 1;
+      // Print the log on destruction
+      cudaDeviceSynchronize();
+      myLog.PrintLog();
+   }
 }
 
 extern __constant__ int d_highestRank[8192];
 extern __constant__ int d_lowestRank[8192];
 
-__global__ void CarpFanOut(Carpenter * carp, boards & chunk)
+void Carpenter::Overlook(const futureTricks* h_Futures, int maxFut)
 {
-   int i = threadIdx.x;
-   i += d_lowestRank[i];
-   //if (i == 164) {
-   //   LOG(SUCCESS);
-   //}
-   if (i == 16) {
+   // Copy mFutures[] to device (GPU)
+   cudaMemcpy(Himpl->d_futures, h_Futures, maxFut * sizeof(futureTricks), cudaMemcpyHostToDevice);
+}
+
+__global__ void CarpFanOut(CarpImpl* d_carp)
+{
+   int idx = threadIdx.x;
+   d_carp->SolveBoardOnGPU(idx);
+}
+
+void Carpenter::SolveChunk(boards& chunk)
+{
+   printf("... %d boards on GPU ... ", chunk.noOfBoards);
+   if (Himpl) {
+      // Prepare Carpenter on GPU
+      Himpl->SyncUp(chunk);
+
+      // Launch kernels using device-side Carpenter
+      CarpFanOut <<< 1, chunk.noOfBoards >>> (Himpl->d_carp);
+   }
+}
+
+void Carpenter::SyncDown(futureTricks* h_Futures, int maxFut)
+{
+   if (Himpl) {
+      printf("\n Sync down %d boards from GPU ... ", maxFut);
+      Himpl->SyncDown(h_Futures, maxFut);
+   }
+}
+
+
+// ==========
+__device__ void CarpImpl::SolveBoardOnGPU(int idx)
+{
+
+   if (idx == 16) {
       LOG(INVALID_ARGUMENT);
    }
 
-   //deal* myDeal = chunk.deals + i;
-   //carp->SolveBoard(
+   // Ensure we don’t go out of bounds
+   if (idx < d_chunk->noOfBoards) {
+      // Write garbage directly into mFutures[]
+      d_futures[idx].cards = 999;   // Fake number of tricks
+      d_futures[idx].suit[0] = 3;   // Fake suit
+      d_futures[idx].rank[0] = 14;  // Fake rank (Ace)
+      d_futures[idx].score[0] = -99;// Fake score
+   }
+
+   //deal* myDeal = chunk.deals + idx;
+   //d_carp->SolveBoard(
    //   chunk.deals[i],
    //   chunk.target[i],
    //   chunk.solutions[i],
@@ -80,23 +163,7 @@ __global__ void CarpFanOut(Carpenter * carp, boards & chunk)
    //);
 }
 
-//__global__ void CarpFanGarbage(Carpenter *carp, boards & chunk) {
-//   int idx = threadIdx.x;
-//
-//   // Ensure we don't go out of bounds
-//   if (idx < chunk.noOfBoards) {
-//      // Write garbage values into mFutures (futureTricks struct)
-//      chunk.futures[idx].cards = 999;  // Garbage value for number of tricks
-//      chunk.futures[idx].suit[0] = 3;  // Fake suit
-//      chunk.futures[idx].rank[0] = 14; // Fake rank (Ace)
-//      chunk.futures[idx].score[0] = -99; // Fake score
-//   }
-//}
-
-void Carpenter::SolveChunk(boards& chunk)
+__device__ int CarpImpl::SolveBoard(const deal& dl, const int target, const int solutions, const int mode, futureTricks* futp, ThreadData* thrp)
 {
-   printf("... %d boards on GPU ... ", chunk.noOfBoards);
-   CarpFanOut <<< 1, chunk.noOfBoards >>> (this, chunk);
-   //CarpFanGarbage <<< 1, chunk.noOfBoards >>> (this, chunk);
+   return 1;
 }
-

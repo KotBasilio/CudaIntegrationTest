@@ -441,10 +441,11 @@ void CTestSuite::CarpenterSolve()
 
    // run with CUDA
    Carpenter carp;
-   //carp.SmallTest();
+   carp.Overlook(mFutures, TOTAL_FUTURES_IN_TEST);
    carp.SolveChunk(_chunkBoards);
 
    // compare
+   carp.SyncDown(mFutures, TOTAL_FUTURES_IN_TEST);
    ControlSolvedBoards(isAllright);
 }
 
